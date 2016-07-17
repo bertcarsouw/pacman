@@ -1,20 +1,23 @@
-function Pacman(context, image) {
+function Pacman(context, image, level) {
 
-	var x = 100;
-	var y = 100;
+	var x = 24;
+	var y = 24;
 
 	var frame = 0;
-	var animationState = 'rightClosed';
-	var speed = 1000 / 20;
+	var animationState = 'closed';
+	var frameRatio = 1000 / 50;
+
+	var moveScreen = false;
 
 	var left = false;
 	var right = true;
 	var up = false;
 	var down = false;
+	var stop = false;
 
 	var rotationAngle = 0;
 
-	setInterval(animate, speed);
+	setInterval(animate, frameRatio);
 
 	this.goLeft = function() {
 		resetDirections();
@@ -43,23 +46,50 @@ function Pacman(context, image) {
 		down = false;
 	};
 
+	var animationSpeed = 1;
+	var animationSpeedCounter = 0;
+
 	function animate() {
+		context.clearRect(x, y, 52, 52);
+		if (y > 456 && y < 492) {
+			moveScreen = true;
+		} else {
+			moveScreen = false;
+		}
+		stop = false;
+		if (isColliding()) {
+			stop = true;
+		}
 		setAnimationState();
-		context.clearRect(0, 0, canvas.width, canvas.height);
 		setMovingCoordinates();		
 		context.drawImage(image, spriteCoordinates[animationState].x, spriteCoordinates[animationState].y, 52, 52, x, y, 52, 52);
-		frame++;
-	};
+		if (animationSpeed == animationSpeedCounter) {
+			frame++;
+			animationSpeedCounter = 0;
+		} else {
+			animationSpeedCounter++;
+		}
+	}; 
 
 	function setMovingCoordinates() {
+		if (stop) {
+			return;
+		}
+		if (moveScreen) {
+			if (down) {
+				level.moveDown();
+			} else if (up) {
+				level.moveUp();
+			}
+		}
 		if (left) {
-			x -= 12;
+			x -= 4;
 		} else if (right) {
-			x += 12;
+			x += 4;
 		} else if (down) {
-			y += 12;
+			y += 4;
 		} else if (up) {
-			y -= 12;
+			y -= 4;
 		}
 	};
 
@@ -77,7 +107,9 @@ function Pacman(context, image) {
 
 	function setAnimationState() {
 		direction = getDirection();
-		if (frame == 0) {
+		if (stop) {
+			animationState = direction + 'Half';
+		} else if (frame == 0) {
 			animationState = 'closed';
 		} else if (frame == 1) {
 			animationState = direction + 'Half';
@@ -128,6 +160,31 @@ function Pacman(context, image) {
 			"x": 580,
 			"y": 264
 		}
+	};
+
+	function isColliding() {
+		if (right) {
+			if (x == 852) {
+				return true;
+			}
+			if (y == 24) {
+				if (x == 388) {
+					return true;
+				}
+			}			
+		} else if (left) {
+			if (x == 24) {
+				return true;
+			}
+			if (y == 24 && x == 488) {
+				return true;
+			}			
+		} else if (up) {
+			if (y == 24) {
+				return true;
+			}
+		}
+		return false;
 	};
 
 };

@@ -11,15 +11,25 @@
 			    margin: 0;
 			    padding: 0;
 			    overflow: hidden;
+			    text-align: center;
 			}
 			canvas {
-			    position:absolute;
+			    margin: 0 auto;
+			}
+			p {
+				position: fixed;
+				color: white;
+				font-size: 30px;
+				left: 40px;
+				font-family: "Lucida Console", Monaco, monospace;
 			}
 		</style>
 	</head>
 	<body>
+		<p>work in progress</p>
 		<canvas id="canvas"></canvas>
 		<script src="elements/pacman.js"></script>
+		<script src="level/level.js"></script>
 		<script src="game.js"></script>
 	</body>
 </html>
