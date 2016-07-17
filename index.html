@@ -4,14 +4,22 @@
 		<meta charset="utf-8">
 		<title>pacman</title>
 		<style type="text/css">
-			body {
+			body, html {
 				background: black;
+			    width: 100%;
+			    height: 100%;
+			    margin: 0;
+			    padding: 0;
+			    overflow: hidden;
+			}
+			canvas {
+			    position:absolute;
 			}
 		</style>
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
-		<script src="sprite-coordinates.js"></script>
-		<script src="app.js"></script>
+		<script src="elements/pacman.js"></script>
+		<script src="game.js"></script>
 	</body>
 </html>
