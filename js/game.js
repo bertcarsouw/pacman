@@ -8,7 +8,6 @@ var pacman = null;
 var running = null;
 
 function run() {
-	pacman.setNextStep();
 	if (pacman.inMiddleLevel()) {
 		if (pacman.getDirection() == 'up') {
 			level.moveUp();
@@ -16,6 +15,7 @@ function run() {
 			level.moveDown();
 		}
 	}
+	pacman.setNextStep();
 };
 
 function onSpriteLoaded() {
@@ -23,7 +23,6 @@ function onSpriteLoaded() {
 		pacman = new Pacman(context, elementsImage);
 		level = new Level(context, levelImage)
 		window.addEventListener('keydown', handleKey);
-		// running = setInterval(run, pacman.getFrameRatio());
 		running = setInterval(run, 30);
 	}
 };

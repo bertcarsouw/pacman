@@ -23,15 +23,16 @@ function Pacman(context, image) {
 	var down = false;
 	var stop = false;
 
+	var requestedDirection = null;
+
 	/*
 	 * 	is used to change pacman animation every two nextSteps
 	 */
 	var animationSpeed = 2;
 	var animationSpeedCounter = 0;
 
-	var running = null;
-
 	function goLeft() {
+		requestedDirection = 'left';
 		if (!isColliding('left')) {
 			resetDirections();
 			left = true;
@@ -39,6 +40,7 @@ function Pacman(context, image) {
 	};
 
 	function goRight() {
+		requestedDirection = 'right';
 		if (!isColliding('right')) {
 			resetDirections();
 			right = true;
@@ -46,6 +48,7 @@ function Pacman(context, image) {
 	};
 
 	function goUp() {
+		requestedDirection = 'up';
 		if (!isColliding('up')) {
 			resetDirections();
 			up = true;
@@ -53,6 +56,7 @@ function Pacman(context, image) {
 	};
 
 	function goDown() {
+		requestedDirection = 'down';
 		if (!isColliding('down')) {
 			resetDirections();
 			down = true;
@@ -60,7 +64,7 @@ function Pacman(context, image) {
 	};
 
 	function inMiddleLevel() {
-		return y > 456 && y < 492; 
+		return y > 444 && y < 504; 
 	};
 
 	function getDirection() {
@@ -82,14 +86,31 @@ function Pacman(context, image) {
 		down = false;
 	};
 
+	function setRequestedDirection() {
+		resetDirections();
+		if (requestedDirection == 'left') {
+			left = true;
+		} else if (requestedDirection == 'right') {
+			right = true;
+		} else if (requestedDirection == 'down') {
+			down = true;
+		} else if (requestedDirection == 'up') {
+			up = true;
+		}
+	};
+
 	function setNextStep() {
 		context.clearRect(x, y, 52, 52);
 		stop = false;
-		if (isColliding(getDirection())) {
-			stop = true;
+		if (requestedDirection && !isColliding(requestedDirection)) {
+			setRequestedDirection();
+		} else {
+			if (isColliding(getDirection())) {
+				stop = true;
+			}
 		}
+		setMovingCoordinates();
 		setAnimationState();
-		setMovingCoordinates();		
 		context.drawImage(image, spriteCoordinates[animationState].x, spriteCoordinates[animationState].y, 52, 52, x, y, 52, 52);
 		if (animationSpeedCounter == animationSpeed) {
 			frame++;
@@ -171,26 +192,116 @@ function Pacman(context, image) {
 		}
 	};
 
+	var column = {
+		"y": [0, 24, 156, 252, 356, 452, 552, 652, 752, 848, 948],
+		"x": [0, 24, 88, 188, 288, 388, 488, 584, 684, 784, 848]
+	};	
+
 	function isColliding(direction) {
+		console.log(y)
 		if (direction == 'right') {
-			if (x == 852) {
+			if (x == column.x[10]) {
 				return true;
 			}
-			if (y == 24) {
-				if (x == 388) {
+			// 1st X-layer
+			if (y == column.y[1]) {
+				if (x == column.x[5]) {
 					return true;
 				}
-			}			
-		} else if (direction == 'left') {
-			if (x == 24) {
+			} 
+			// 1.5st X-layer
+			if (y > column.y[1] && y < column.y[2]) {
 				return true;
 			}
-			if (y == 24 && x == 488) {
+			// 2.5st X-layer
+			if (y > column.y[2] && y < column.y[3]) {
 				return true;
-			}			
+			}
+			if (y == column.y[3]) {
+				if (x == column.x[3] 
+					|| x == column.x[5]
+					|| x == column.x[7]) {
+					return true;
+				}
+			}
+		} else if (direction == 'left') {
+			if (x == column.x[1]) {
+				return true;
+			}
+			// 1st X-layer
+			if (y == column.y[1]) {
+				if (x == column.x[6]) {
+					return true;
+				}
+			}
+			// 1.5st X-layer
+			if (y > column.y[1] && y < column.y[2]) {
+				return true;
+			}
+			// 2.5st X-layer
+			if (y > column.y[2] && y < column.y[3]) {
+				return true;
+			}
+			if (y == column.y[3]) {
+				if (x == column.x[4]
+					|| x == column.x[6]
+					|| x == column.x[8]) {
+					return true;
+				}
+			}
 		} else if (direction == 'up') {
-			if (y == 24) {
+			if (y == column.y[1]) {
 				return true;
+			}
+			if (y == column.y[2]) {
+				if (x != 24 
+					&& x != 188
+					&& x != 388
+					&& x != 488
+					&& x != 684
+					&& x != 848) {
+					return true;
+				}
+			}
+			if (y == column.y[3]) {
+				if (x != column.x[1]
+					&& x != column.x[3]
+					&& x != column.x[4]
+					&& x != column.x[7]
+					&& x != column.x[8]
+					&& x != column.x[10]) {
+					return true;
+				}
+			}
+		} else if (direction == 'down') {
+			// 1st X-layer
+			if (y == column.y[1]) {
+				if (x != column.x[1] 
+					&& x != column.x[3]
+					&& x != column.x[5]
+					&& x != column.x[6]
+					&& x != column.x[8]
+					&& x != column.x[10]) {
+					return true;
+				}
+			}
+			if (y == column.y[2]) {
+				if (x != column.x[1]
+					&& x != column.x[3] 
+					&& x != column.x[4]
+					&& x != column.x[7]
+					&& x != column.x[8]
+					&& x != column.x[10]) {
+					return true;					
+				}
+			}
+			if (y == column.y[3]) {
+				if (x != column.x[3]
+					&& x != column.x[5]
+					&& x != column.x[6]
+					&& x != column.x[8]) {
+					return true;
+				}
 			}
 		}
 		return false;

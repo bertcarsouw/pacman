@@ -1,6 +1,6 @@
 function Level(context, image) {
 
-	var translateCounter = 0;
+	// var translateCounter = 0;
 	var translateY = 0;
 	
 	draw();
@@ -15,22 +15,16 @@ function Level(context, image) {
 		if (translateY > 0) {
 			translateY = 0;
 		}
-		if (translateCounter <= 10) {
-			translateCounter++;
-			translateY -= 2;
-			draw(translateY);
-		}
+		translateY -= 1;
+		draw(translateY);
 	};
 
 	this.moveUp = function() {
 		if (translateY < 0) {
 			translateY = 0;
 		}
-		if (translateCounter >= 0) {
-			translateCounter--;
-			translateY += 2;
-			draw(translateY);
-		}
+		translateY += 1;
+		draw(translateY);
 	};
 
 
