@@ -198,113 +198,306 @@ function Pacman(context, image) {
 	};	
 
 	function isColliding(direction) {
-		console.log(y)
 		if (direction == 'right') {
-			if (x == column.x[10]) {
-				return true;
-			}
-			// 1st X-layer
-			if (y == column.y[1]) {
-				if (x == column.x[5]) {
-					return true;
-				}
-			} 
-			// 1.5st X-layer
-			if (y > column.y[1] && y < column.y[2]) {
-				return true;
-			}
-			// 2.5st X-layer
-			if (y > column.y[2] && y < column.y[3]) {
-				return true;
-			}
-			if (y == column.y[3]) {
-				if (x == column.x[3] 
-					|| x == column.x[5]
-					|| x == column.x[7]) {
-					return true;
-				}
-			}
+			return isCollidingRight()
 		} else if (direction == 'left') {
-			if (x == column.x[1]) {
-				return true;
-			}
-			// 1st X-layer
-			if (y == column.y[1]) {
-				if (x == column.x[6]) {
-					return true;
-				}
-			}
-			// 1.5st X-layer
-			if (y > column.y[1] && y < column.y[2]) {
-				return true;
-			}
-			// 2.5st X-layer
-			if (y > column.y[2] && y < column.y[3]) {
-				return true;
-			}
-			if (y == column.y[3]) {
-				if (x == column.x[4]
-					|| x == column.x[6]
-					|| x == column.x[8]) {
-					return true;
-				}
-			}
+			return isCollidingLeft();
 		} else if (direction == 'up') {
-			if (y == column.y[1]) {
+			return isCollidingUp();
+		} else if (direction == 'down') {
+			return isCollidingDown();
+		}
+	};
+
+	function isCollidingRight() {
+		if (column.x[10] == x) {
+			return true;
+		}
+		if (column.y[1] == y) {
+			if (column.x[5] == x) {
+				return true;
+			} 
+			return false;
+		} else if (column.y[2] == y) {
+			return false;
+		} else if (column.y[3] == y) {
+			if (column.x[3] == x 
+				|| column.x[5] == x
+				|| column.x[5] == x
+				|| column.x[7] == x) {
 				return true;
 			}
-			if (y == column.y[2]) {
-				if (x != 24 
-					&& x != 188
-					&& x != 388
-					&& x != 488
-					&& x != 684
-					&& x != 848) {
-					return true;
-				}
+			return false;
+		} else if (column.y[4] == y) {
+			if (column.x[3] == x 
+				|| column.x[7] == x
+				|| column.x[8] == x) {
+				return true;				
 			}
-			if (y == column.y[3]) {
-				if (x != column.x[1]
-					&& x != column.x[3]
-					&& x != column.x[4]
-					&& x != column.x[7]
-					&& x != column.x[8]
-					&& x != column.x[10]) {
-					return true;
-				}
+			return false;
+		} else if (column.y[5] == y) {
+			if (column.x[4] == x) {
+				return true;
 			}
-		} else if (direction == 'down') {
-			// 1st X-layer
-			if (y == column.y[1]) {
-				if (x != column.x[1] 
-					&& x != column.x[3]
-					&& x != column.x[5]
-					&& x != column.x[6]
-					&& x != column.x[8]
-					&& x != column.x[10]) {
-					return true;
-				}
+			return false;
+		} else if (column.y[6] == y) {
+			if (column.x[3] == x 
+				|| column.x[7] == x
+				|| column.x[8] == x) {
+				return true;				
 			}
-			if (y == column.y[2]) {
-				if (x != column.x[1]
-					&& x != column.x[3] 
-					&& x != column.x[4]
-					&& x != column.x[7]
-					&& x != column.x[8]
-					&& x != column.x[10]) {
-					return true;					
-				}
+			return false;
+		} else if (column.y[7] == y) {
+			if (column.x[5] == x) {
+				return true;
 			}
-			if (y == column.y[3]) {
-				if (x != column.x[3]
-					&& x != column.x[5]
-					&& x != column.x[6]
-					&& x != column.x[8]) {
-					return true;
-				}
+			return false;
+		} else if (column.y[8] == y) {
+			if (column.x[2] == x 
+				|| column.x[8] == x) {
+				return true;
 			}
+			return false;
+		} else if (column.y[9] == y) {
+			if (column.x[3] == x 
+				|| column.x[7] == x) {
+				return true;
+			}
+			return false;
+		} else if (column.y[10] == y) {
+			return false;
 		}
-		return false;
+		return true;
+	};
+
+	function isCollidingLeft() {
+		if (column.x[1] == x) {
+			return true;
+		} 
+		if (column.y[1] == y) {
+			if (column.x[6] == x) {
+				return true;
+			}
+			return false;
+		} else if (column.y[2] == y) {
+			return false;
+		} else if (column.y[3] == y) {
+			if (column.x[4] == x
+				|| column.x[6] == x
+				|| column.x[8] == x) {
+				return true;
+			} 
+			return false;
+		} else if (column.y[4] == y) {
+			if (column.x[3] == x
+				|| column.x[4] == x
+				|| column.x[8] == x) {
+				return true;
+			} 
+			return false;
+		} else if (column.y[5] == y) {
+			if (column.x[7] == x) {
+				return true;
+			}
+			return false;
+		} else if (column.y[6] == y) {
+			if (column.x[3] == x
+				|| column.x[4] == x
+				|| column.x[8] == x) {
+				return true;
+			} 
+			return false;
+		} else if (column.y[7] == y) {
+			if (column.x[6] == x) {
+				return true;
+			}
+			return false;
+		} else if (column.y[8] == y) {
+			if (column.x[3] == x
+				|| column.x[9] == x) {
+				return true;
+			}
+			return false;
+		} else if (column.y[9] == y) {
+			if (column.x[4] == x
+				|| column.x[8] == x) {
+				return true;
+			}
+			return false;
+		} else if (column.y[10] == y) {
+			return false;
+		}
+		return true;
+	};
+
+	function isCollidingUp() {
+		if (column.y[1] == y) {
+			return true;
+		}
+		if (column.x[1] == x) {
+			if (column.y[5] == y
+				|| column.y[7] == y
+				|| column.y[9] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[2] == x) {
+			if (column.y[1] == y
+				|| column.y[2] == y
+				|| column.y[3] == y
+				|| column.y[5] == y
+				|| column.y[7] == y
+				|| column.y[8] == y
+				|| column.y[10] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[3] == x) {
+			if (column.y[10] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[4] == x) {
+			if (column.y[2] == y
+				|| column.y[4] == y
+				|| column.y[8] == y
+				|| column.y[10] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[5] == x) {
+			if (column.y[3] == y
+				|| column.y[6] == y
+				|| column.y[7] == y
+				|| column.y[9] == y) {
+				return true;
+			}
+			return false;	
+		} else if (column.x[6] == x) {
+			if (column.y[3] == y
+				|| column.y[6] == y
+				|| column.y[7] == y
+				|| column.y[9] == y) {
+				return true;
+			}
+			return false;	
+		} else if (column.x[7] == x) {
+			if (column.y[2] == y
+				|| column.y[4] == y
+				|| column.y[8] == y
+				|| column.y[10] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[8] == x) {
+			if (column.y[10] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[9] == x) {
+			if (column.y[1] == y
+				|| column.y[2] == y
+				|| column.y[3] == y
+				|| column.y[5] == y
+				|| column.y[7] == y
+				|| column.y[8] == y
+				|| column.y[10] == y) {
+				return true;
+			}
+			return false;	
+		} else if (column.x[10] == x) {
+			if (column.y[5] == y
+				|| column.y[7] == y
+				|| column.y[9] == y) {
+				return true;
+			}
+			return false;
+		}
+		return true;
+	};
+
+	function isCollidingDown() {
+		if (column.y[10] == y) {
+			return true;
+		}
+		if (column.x[1] == x) {
+			if (column.y[3] == y
+				|| column.y[5] == y
+				|| column.y[8] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[2] == x) {
+			if (column.y[1] == y
+				|| column.y[2] == y
+				|| column.y[3] == y
+				|| column.y[5] == y
+				|| column.y[7] == y
+				|| column.y[9] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[3] == x) {
+			if (column.y[9] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[4] == x) {
+			if (column.y[1] == y
+				|| column.y[3] == y
+				|| column.y[7] == y
+				|| column.y[9] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[5] == x) {
+			if (column.y[2] == y
+				|| column.y[4] == y
+				|| column.y[6] == y
+				|| column.y[8] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[6] == x) {
+			if (column.y[2] == y
+				|| column.y[4] == y
+				|| column.y[6] == y
+				|| column.y[8] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[7] == x) {
+			if (column.y[1] == y
+				|| column.y[3] == y
+				|| column.y[7] == y
+				|| column.y[9] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[8] == x) {
+			if (column.y[9] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[9] == x) {
+			if (column.y[1] == y
+				|| column.y[2] == y
+				|| column.y[3] == y
+				|| column.y[5] == y
+				|| column.y[7] == y
+				|| column.y[9] == y) {
+				return true;
+			}
+			return false;
+		} else if (column.x[10] == x) {
+			if (column.y[3] == y
+				|| column.y[5] == y
+				|| column.y[8] == y) {
+				return true;
+			}
+			return false;
+		}
+		return true;
 	};
 
 };
