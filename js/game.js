@@ -8,13 +8,6 @@ var pacman = null;
 var running = null;
 
 function run() {
-	if (pacman.inMiddleLevel()) {
-		if (pacman.getDirection() == 'up') {
-			level.moveUp();
-		} else if (pacman.getDirection() == 'down') {
-			level.moveDown();
-		}
-	}
 	pacman.setNextStep();
 };
 
@@ -43,7 +36,9 @@ function setupCanvas() {
 	canvas = document.getElementById("canvas");
 	context = canvas.getContext("2d");
 	canvas.height = 1024;
-	canvas.width = 1024;
+	canvas.width = 925;
+	context.scale(0.8, 0.8);
+	context.translate(0.1 * canvas.width, 100);
 	canvas.style.width = canvas.width + 'px';
 	canvas.style.height = canvas.height + 'px';
 };

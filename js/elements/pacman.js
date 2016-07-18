@@ -112,6 +112,7 @@ function Pacman(context, image) {
 		setMovingCoordinates();
 		setAnimationState();
 		context.drawImage(image, spriteCoordinates[animationState].x, spriteCoordinates[animationState].y, 52, 52, x, y, 52, 52);
+		trimTunnelEdges();
 		if (animationSpeedCounter == animationSpeed) {
 			frame++;
 			animationSpeedCounter = 0;
@@ -120,9 +121,23 @@ function Pacman(context, image) {
 		}
 	}; 
 
+	function trimTunnelEdges() {
+		if (x < 0) {
+			context.clearRect(-52, 452, 52, 52);
+		} else if (x > 873) {
+			context.clearRect(925, 452, 52, 52);
+		}
+	};
+
 	function setMovingCoordinates() {
 		if (stop) {
 			return;
+		}
+		if (x < -52) {
+			x = 924;
+		}
+		if (x > 924) {
+			x = -52;
 		}
 		if (left) {
 			x -= 4;
@@ -210,7 +225,7 @@ function Pacman(context, image) {
 	};
 
 	function isCollidingRight() {
-		if (column.x[10] == x) {
+		if (column.x[10] == x && column.y[5] != y) {
 			return true;
 		}
 		if (column.y[1] == y) {
@@ -260,6 +275,7 @@ function Pacman(context, image) {
 			return false;
 		} else if (column.y[9] == y) {
 			if (column.x[3] == x 
+				|| column.x[5] == x
 				|| column.x[7] == x) {
 				return true;
 			}
@@ -271,7 +287,7 @@ function Pacman(context, image) {
 	};
 
 	function isCollidingLeft() {
-		if (column.x[1] == x) {
+		if (column.x[1] == x && column.y[5] != y) {
 			return true;
 		} 
 		if (column.y[1] == y) {
@@ -320,6 +336,7 @@ function Pacman(context, image) {
 			return false;
 		} else if (column.y[9] == y) {
 			if (column.x[4] == x
+				|| column.x[6] == x
 				|| column.x[8] == x) {
 				return true;
 			}
