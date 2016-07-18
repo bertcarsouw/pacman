@@ -1,16 +1,30 @@
 var canvas = null;
 var context = null;
 var elementsImage = null;
+var levelImage = null;
 
 var pacman = null;
 
-var loadedSpriteCounter = 0;
+var running = null;
+
+function run() {
+	pacman.setNextStep();
+	if (pacman.inMiddleLevel()) {
+		if (pacman.getDirection() == 'up') {
+			level.moveUp();
+		} else if (pacman.getDirection() == 'down') {
+			level.moveDown();
+		}
+	}
+};
 
 function onSpriteLoaded() {
-	loadedSpriteCounter++;
-	if (loadedSpriteCounter == 2) {
-		pacman = new Pacman(context, elementsImage, new Level(context, levelImage));
+	if (elementsImage != null && levelImage != null) {
+		pacman = new Pacman(context, elementsImage);
+		level = new Level(context, levelImage)
 		window.addEventListener('keydown', handleKey);
+		// running = setInterval(run, pacman.getFrameRatio());
+		running = setInterval(run, 30);
 	}
 };
 
@@ -39,10 +53,8 @@ function setup() {
 	setupCanvas();
 	elementsImage = new Image();
 	elementsImage.onload = onSpriteLoaded;
-	elementsImage.src = "sprites/sprite.png";
+	elementsImage.src = "images/sprite.png";
 	levelImage = new Image();
 	levelImage.onload = onSpriteLoaded;
-	levelImage.src = "sprites/level.png";
+	levelImage.src = "images/level.png";
 };
-
-setup();

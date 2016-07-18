@@ -6,7 +6,6 @@ function Level(context, image) {
 	draw();
 
 	function draw() {
-		console.log(translateY)
 		context.clearRect(0, 0, 1024, 1024);
 		context.translate(0, translateY);
 		context.drawImage(image, 0, 0, 925, 1024, 0, 0, 925, 1024);
@@ -16,9 +15,9 @@ function Level(context, image) {
 		if (translateY > 0) {
 			translateY = 0;
 		}
-		if (translateCounter <= 7) {
+		if (translateCounter <= 10) {
 			translateCounter++;
-			translateY -= 1;
+			translateY -= 2;
 			draw(translateY);
 		}
 	};
@@ -29,7 +28,7 @@ function Level(context, image) {
 		}
 		if (translateCounter >= 0) {
 			translateCounter--;
-			translateY += 1;
+			translateY += 2;
 			draw(translateY);
 		}
 	};

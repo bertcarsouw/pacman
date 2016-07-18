@@ -1,13 +1,21 @@
-function Pacman(context, image, level) {
+function Pacman(context, image) {
 
+	/*
+	 *	public accessable functions
+	 */
+	this.getDirection = getDirection;
+	this.goLeft = goLeft;
+	this.goRight = goRight;
+	this.goUp = goUp;
+	this.goDown = goDown;
+	this.inMiddleLevel = inMiddleLevel;
+	this.setNextStep = setNextStep;
+	
 	var x = 24;
 	var y = 24;
 
 	var frame = 0;
 	var animationState = 'closed';
-	var frameRatio = 1000 / 50;
-
-	var moveScreen = false;
 
 	var left = false;
 	var right = true;
@@ -15,82 +23,44 @@ function Pacman(context, image, level) {
 	var down = false;
 	var stop = false;
 
-	var rotationAngle = 0;
-
-	setInterval(animate, frameRatio);
-
-	this.goLeft = function() {
-		resetDirections();
-		left = true;
-	};
-
-	this.goRight = function() {
-		resetDirections();
-		right = true;
-	};
-
-	this.goUp = function() {
-		resetDirections();
-		up = true;
-	};
-
-	this.goDown = function() {
-		resetDirections();
-		down = true;
-	};
-
-	function resetDirections() {
-		left = false;
-		right = false;
-		up = false;
-		down = false;
-	};
-
-	var animationSpeed = 1;
+	/*
+	 * 	is used to change pacman animation every two nextSteps
+	 */
+	var animationSpeed = 2;
 	var animationSpeedCounter = 0;
 
-	function animate() {
-		context.clearRect(x, y, 52, 52);
-		if (y > 456 && y < 492) {
-			moveScreen = true;
-		} else {
-			moveScreen = false;
-		}
-		stop = false;
-		if (isColliding()) {
-			stop = true;
-		}
-		setAnimationState();
-		setMovingCoordinates();		
-		context.drawImage(image, spriteCoordinates[animationState].x, spriteCoordinates[animationState].y, 52, 52, x, y, 52, 52);
-		if (animationSpeed == animationSpeedCounter) {
-			frame++;
-			animationSpeedCounter = 0;
-		} else {
-			animationSpeedCounter++;
-		}
-	}; 
+	var running = null;
 
-	function setMovingCoordinates() {
-		if (stop) {
-			return;
+	function goLeft() {
+		if (!isColliding('left')) {
+			resetDirections();
+			left = true;
 		}
-		if (moveScreen) {
-			if (down) {
-				level.moveDown();
-			} else if (up) {
-				level.moveUp();
-			}
+	};
+
+	function goRight() {
+		if (!isColliding('right')) {
+			resetDirections();
+			right = true;
 		}
-		if (left) {
-			x -= 4;
-		} else if (right) {
-			x += 4;
-		} else if (down) {
-			y += 4;
-		} else if (up) {
-			y -= 4;
+	};
+
+	function goUp() {
+		if (!isColliding('up')) {
+			resetDirections();
+			up = true;
 		}
+	};
+
+	function goDown() {
+		if (!isColliding('down')) {
+			resetDirections();
+			down = true;
+		}
+	};
+
+	function inMiddleLevel() {
+		return y > 456 && y < 492; 
 	};
 
 	function getDirection() {
@@ -105,8 +75,47 @@ function Pacman(context, image, level) {
 		}
 	};
 
+	function resetDirections() {
+		left = false;
+		right = false;
+		up = false;
+		down = false;
+	};
+
+	function setNextStep() {
+		context.clearRect(x, y, 52, 52);
+		stop = false;
+		if (isColliding(getDirection())) {
+			stop = true;
+		}
+		setAnimationState();
+		setMovingCoordinates();		
+		context.drawImage(image, spriteCoordinates[animationState].x, spriteCoordinates[animationState].y, 52, 52, x, y, 52, 52);
+		if (animationSpeedCounter == animationSpeed) {
+			frame++;
+			animationSpeedCounter = 0;
+		} else {
+			animationSpeedCounter++;
+		}
+	}; 
+
+	function setMovingCoordinates() {
+		if (stop) {
+			return;
+		}
+		if (left) {
+			x -= 4;
+		} else if (right) {
+			x += 4;
+		} else if (down) {
+			y += 4;
+		} else if (up) {
+			y -= 4;
+		}
+	};
+
 	function setAnimationState() {
-		direction = getDirection();
+		var direction = getDirection();
 		if (stop) {
 			animationState = direction + 'Half';
 		} else if (frame == 0) {
@@ -162,8 +171,8 @@ function Pacman(context, image, level) {
 		}
 	};
 
-	function isColliding() {
-		if (right) {
+	function isColliding(direction) {
+		if (direction == 'right') {
 			if (x == 852) {
 				return true;
 			}
@@ -172,14 +181,14 @@ function Pacman(context, image, level) {
 					return true;
 				}
 			}			
-		} else if (left) {
+		} else if (direction == 'left') {
 			if (x == 24) {
 				return true;
 			}
 			if (y == 24 && x == 488) {
 				return true;
 			}			
-		} else if (up) {
+		} else if (direction == 'up') {
 			if (y == 24) {
 				return true;
 			}
