@@ -10,6 +10,8 @@ function Pacman(context, image) {
 	this.goDown = goDown;
 	this.inMiddleLevel = inMiddleLevel;
 	this.setNextStep = setNextStep;
+	this.getX = getX;
+	this.getY = getY;
 	
 	var x = 24;
 	var y = 24;
@@ -30,6 +32,14 @@ function Pacman(context, image) {
 	 */
 	var animationSpeed = 2;
 	var animationSpeedCounter = 0;
+
+	function getX() {
+		return x;
+	};
+
+	function getY() {
+		return y;
+	};
 
 	function goLeft() {
 		requestedDirection = 'left';

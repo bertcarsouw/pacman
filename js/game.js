@@ -4,18 +4,29 @@ var elementsImage = null;
 var levelImage = null;
 var controls = null;
 var pacman = null;
+var level = null;
 var running = null;
+var loadedSprites = 0;
 
 function run() {
 	pacman.setNextStep();
+	level.removeConsumedDots(pacman.getX(), pacman.getY(), pacman.getDirection());
+	if (level.isCleared()) {
+		stopRunning();
+	}
+};
+
+function stopRunning() {
+	clearInterval(running);
 };
 
 function onSpriteLoaded() {
-	if (elementsImage != null && levelImage != null) {
+	loadedSprites++;
+	if (loadedSprites == 2) {
+		level = new Level(context, levelImage, elementsImage);
 		pacman = new Pacman(context, elementsImage);
-		level = new Level(context, levelImage)
 		controls = new Controls(pacman);
-		running = setInterval(run, 30);
+		running = setInterval(run, 20);
 	}
 };
 
