@@ -2,9 +2,8 @@ var canvas = null;
 var context = null;
 var elementsImage = null;
 var levelImage = null;
-
+var controls = null;
 var pacman = null;
-
 var running = null;
 
 function run() {
@@ -15,22 +14,10 @@ function onSpriteLoaded() {
 	if (elementsImage != null && levelImage != null) {
 		pacman = new Pacman(context, elementsImage);
 		level = new Level(context, levelImage)
-		window.addEventListener('keydown', handleKey);
+		controls = new Controls(pacman);
 		running = setInterval(run, 30);
 	}
 };
-
-function handleKey(event) {
-	if (event.keyCode == 38) {
-		pacman.goUp();
-	} else if (event.keyCode == 40) {
-		pacman.goDown();
-	} else if (event.keyCode == 37) {
-		pacman.goLeft();
-	} else if (event.keyCode == 39) {
-		pacman.goRight();
-	}
-}
 
 function setupCanvas() {
 	canvas = document.getElementById("canvas");
