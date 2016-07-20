@@ -8,7 +8,6 @@ function Pacman(context, image) {
 	this.goRight = goRight;
 	this.goUp = goUp;
 	this.goDown = goDown;
-	this.inMiddleLevel = inMiddleLevel;
 	this.setNextStep = setNextStep;
 	this.getX = getX;
 	this.getY = getY;
@@ -71,10 +70,6 @@ function Pacman(context, image) {
 			resetDirections();
 			down = true;
 		}
-	};
-
-	function inMiddleLevel() {
-		return y > 444 && y < 504; 
 	};
 
 	function getDirection() {

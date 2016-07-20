@@ -2,6 +2,8 @@ function Level(context, levelImage, elementsImage) {
 
 	this.removeConsumedDots = removeConsumedDots;
 	this.isCleared = isCleared;
+	this.drawLevel  = drawLevel;
+	this.drawDots = drawDots;
 
 	var dotRows = [];
 
