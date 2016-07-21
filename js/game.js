@@ -3,10 +3,12 @@ function Game(context, levelImage, elementsImage) {
 	var pacman = null;
 	var level = null;
 	var pacmanRunning = null;
+	var ghost = null;
 
 	function runPacman() {
-		pacman.setNextStep();
-		level.removeConsumedDots(pacman.getX(), pacman.getY(), pacman.getDirection());
+		// pacman.setNextStep();
+		ghost.setNextStep();
+		// level.removeConsumedDots(pacman.getX(), pacman.getY(), pacman.getDirection());
 		if (level.isCleared()) {
 			stopRunning();
 		}
@@ -17,9 +19,10 @@ function Game(context, levelImage, elementsImage) {
 	};
 
 	function setupElements() {
-		pacman = new Pacman(context, elementsImage);
+		// pacman = new Pacman(context, elementsImage);
 		level = new Level(context, levelImage, elementsImage);
-		new Controls(pacman);
+	 	ghost = new Ghost(context, elementsImage);
+		new Controls(ghost);
 		pacmanRunning = setInterval(runPacman, 20);
 	};
 	
