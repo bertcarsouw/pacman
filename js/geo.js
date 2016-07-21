@@ -1,43 +1,21 @@
-function Geo(permittedDirections, startX, startY) {
+function Geo(permittedDirections, startX, startY, width) {
 
-	this.executeRequestedDirection = executeRequestedDirection;
 	this.getDirection = getDirection;
 	this.isColliding = isColliding;
 	this.setDirection = setDirection;
-	this.setRequestedDirection = setRequestedDirection;
-	this.getRequestedDirection = getRequestedDirection;
 	this.setMovingCoordinates = setMovingCoordinates;
 	this.getX = getX;
 	this.getY = getY;
 	this.stop = stop;
 	this.move = move;
+	this.isMoving = isMoving;
 
 	var x = startX;
 	var y = startY;
 
-	var left = false;
-	var right = true;
-	var up = false;
-	var down = false;
 	var moving = true;
 
-	var requestedDirection = null;
-
-	function stop() {
-		moving = false;
-	};
-
-	function move() {
-		moving = true;
-	};
-
-	function getRequestedDirection() {
-		return requestedDirection;
-	};
-
-	function setRequestedDirection(direction) {
-		requestedDirection = direction;
-	}
+	var direction = null;
 
 	function getX() {
 		return x;
@@ -47,68 +25,43 @@ function Geo(permittedDirections, startX, startY) {
 		return y;
 	};
 
+	function stop() {
+		moving = false;
+	};
+
+	function move() {
+		moving = true;
+	};
+
+	function isMoving() {
+		return moving;
+	};
+	
 	function getDirection() {
-		if (up) {
-			return 'up';
-		} else if (down) {
-			return 'down';
-		} else if (left) {
-			return 'left';
-		} else if (right) {
-			return 'right';
-		}
+		return direction;
 	};
 
-	function setDirection() {
-		resetDirections();
-		if ('up') {
-			up = true;
-		} else if ('down') {
-			down = true;
-		} else if ('left') {
-			left = true;
-		} else if ('right') {
-			right = true;
-		}
+	function setDirection(newDirection) {
+		direction = newDirection;
 	};
-
-	function resetDirections() {
-		left = false;
-		right = false;
-		up = false;
-		down = false;
-	};
-
-	function executeRequestedDirection() {
-		resetDirections();
-		if (requestedDirection == 'left') {
-			left = true;
-		} else if (requestedDirection == 'right') {
-			right = true;
-		} else if (requestedDirection == 'down') {
-			down = true;
-		} else if (requestedDirection == 'up') {
-			up = true;
-		}
-	};
-
+	
 	function setMovingCoordinates() {
 		if (!moving) {
 			return;
 		}
-		if (x < -56) {
+		if (x < -width) {
 			x = 924;
 		}
 		if (x > 924) {
-			x = -56;
+			x = -width;
 		}
-		if (left) {
+		if (direction == 'left') {
 			x -= 4;
-		} else if (right) {
+		} else if (direction == 'right') {
 			x += 4;
-		} else if (down) {
+		} else if (direction == 'down') {
 			y += 4;
-		} else if (up) {
+		} else if (direction == 'up') {
 			y -= 4;
 		}
 	};
