@@ -7,9 +7,13 @@ function Game(context, levelImage, elementsImage) {
 	var ghost = null;
 
 	function runPacman() {
+		level.redrawGhostDots(ghost.getX(), ghost.getY(), ghost.getDirection());
 		pacman.setNextStep();
-		ghost.setNextStep();
 		level.removeConsumedDots(pacman.getGeo().getX(), pacman.getGeo().getY(), pacman.getGeo().getDirection());
+		ghost.setNextStep();
+		if (pacman.getGeo().getX() < 0 || pacman.getGeo().getX() > 873) {
+			level.drawTunnelBorders();
+		}
 		if (level.isCleared()) {
 			stopRunning();
 		}

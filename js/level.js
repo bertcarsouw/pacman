@@ -4,6 +4,8 @@ function Level(context, levelImage, elementsImage) {
 	this.isCleared = isCleared;
 	this.drawLevel  = drawLevel;
 	this.drawDots = drawDots;
+	this.redrawGhostDots = redrawGhostDots;
+	this.drawTunnelBorders = drawTunnelBorders;
 
 	var dotRows = [];
 
@@ -21,22 +23,59 @@ function Level(context, levelImage, elementsImage) {
 		}
 	};
 
-	function removeConsumedDots(pacX, pacY) {
-		var x2 = pacX + 52;
-		var y2 = pacY + 52;
+	function redrawGhostDots(x, y, direction) {
+		var x2 = x + 56;
+		var y2 = y + 56;
+		x = x - 56;
+		y = y - 56;
 		dotRows.forEach(function(row, rowIndex) {
-			if (row.y >= pacY && row.y <= y2) {
+			if (row.y >= y && row.y <= y2) {
 				for (var counter = 0; counter < row.x.length; counter++) {
-					if (row.x[counter] >= pacX && row.x[counter] <= x2) {
-						removeDot(rowIndex, counter);
+					if (row.x[counter] >= x && row.x[counter] <= x2) {
+						redrawDot(rowIndex, counter);
 					}
 				}
 			}
 		});
 	};
 
+	function removeConsumedDots(pacX, pacY, direction) {
+		var x2 = pacX + 52;
+		var y2 = pacY + 52;
+		dotRows.forEach(function(row, rowIndex) {
+			var rowY = row.y;
+			if (direction == 'down') {
+				rowY += 8;
+			}
+			if (rowY >= pacY && rowY <= y2) {
+				for (var counter = 0; counter < row.x.length; counter++) {
+					if (direction == 'right') {
+						if ((row.x[counter] + 8) >= pacX && (row.x[counter] + 8) <= x2) {
+							removeDot(rowIndex, counter);
+						}
+					} else {
+						if (row.x[counter] >= pacX && row.x[counter] <= x2) {
+							removeDot(rowIndex, counter);
+						}
+					}
+				}
+			}
+		});
+	};
+
+	function drawTunnelBorders() {
+		context.clearRect(-100, 429, 100, 100);
+		context.clearRect(925, 429, 100, 100);
+	};
+
 	function isCleared() {
 		return dotsLeft == 0;
+	};
+
+	function redrawDot(rowIndex, dotIndex) {
+		var x = dotRows[rowIndex].x[dotIndex];
+		var y = dotRows[rowIndex].y;
+		drawDot(x, y);
 	};
 
 	function removeDot(rowIndex, dotIndex) {

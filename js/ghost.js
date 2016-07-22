@@ -1,6 +1,11 @@
 function Ghost(context, elementsImage) {
 
 	this.setNextStep = setNextStep;
+	this.getX = getX;
+	this.getY = getY;
+	this.getDirection = getDirection;
+
+	var oldDirection = 'left';
 
 	var permittedDirections = {
 		"y": [0, 22, 154, 250, 354, 450, 550, 650, 750, 846, 946],
@@ -10,34 +15,23 @@ function Ghost(context, elementsImage) {
 	var geo = new Geo(permittedDirections, 846, 946, 56);
 	geo.setDirection('left');
 
-	function goLeft() {
-		if (!geo.isColliding('left')) {
-			geo.setDirection('left');
-		}
+	function getX() {
+		return geo.getX();
 	};
 
-	function goRight() {
-		if (!geo.isColliding('right')) {
-			geo.setDirection('right');
-		}
+	function getY() {
+		return geo.getY();
 	};
 
-	function goUp() {
-		if (!geo.isColliding('up')) {
-			geo.setDirection('up');
-		}
-	};
-
-	function goDown() {
-		if (!geo.isColliding('down')) {
-			geo.setDirection('down');
-		}
+	function getDirection() {
+		return geo.getDirection();
 	};
 
 	function setNextStep() {
 		context.clearRect(geo.getX(), geo.getY(), 56, 56);
 		var possibleDirectionFound = false;
 		if (geo.isColliding(geo.getDirection())) {
+			oldDirection = geo.getDirection();
 			var oppositeDirection = getOppositeDirection(geo.getDirection());
 			while(!possibleDirectionFound) {
 				var randomDirection = getRandomDirection();
