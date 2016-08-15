@@ -2,6 +2,8 @@ function Pacman() {
 
 	this.getX = getX;
 	this.getY = getY;
+	this.setX = setX;
+	this.setY = setY;
 	this.move = move;
 	this.undoMove = undoMove;
 	this.getDirection = getDirection;
@@ -54,6 +56,14 @@ function Pacman() {
 
 	function getY() {
 		return y;
+	}
+	
+	function setX(newX) {
+		x = newX;
+	}
+
+	function setY(newY) {
+		y = newY;
 	}
 
 	function move() {

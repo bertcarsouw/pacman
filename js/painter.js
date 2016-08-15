@@ -4,6 +4,7 @@ function Painter(canvas) {
 	this.drawPacman = drawPacman;
 	this.erasePacman = erasePacman;
 	this.drawGrid = drawGrid;
+	this.drawTunnels = drawTunnels;
 
 	var context,
 		levelImage,
@@ -20,6 +21,11 @@ function Painter(canvas) {
 		RIGHT = 4;
 
 	loadPainter();
+
+	function drawTunnels() {
+		context.clearRect(-100, 444, 100, 70);
+		context.clearRect(925, 444, 100, 70);
+	}
 
 	function setNextPacmanAnimationState() {
 		speedCounter++;

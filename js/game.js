@@ -19,7 +19,7 @@ function Game() {
 		painter.drawLevel();
 		// painter.drawGrid();
 		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection());
-		runner = setInterval(generateFrame, 25);
+		runner = setInterval(generateFrame, 12);
 	}
 
 	function generateFrame() {
@@ -40,6 +40,22 @@ function Game() {
 
 		var animate = true;
 		var blockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());
+
+		// check if pacman goes into tunnel
+		var paintTunnels = false;
+		if (blockNumber[1] == 15) {
+			paintTunnels = true;
+			if (blockNumber[0] == -1) {
+				pacman.setDirection(3);
+				pacman.setX(28 * 33 + 4);
+			} else if (blockNumber[0] == 29) {
+				if (pacman.getDirection() != 3) {
+					pacman.setDirection(4);
+					pacman.setX(-1 * 33 + 4);
+				}
+			}
+		}
+
 		var newBlock = physics.isNewBlock(pacman.getX(), pacman.getY());
 		if (newBlock) {
 			if (pacman.getRequestedDirection() && physics.isValidNewBlockDirection(blockNumber, pacman.getRequestedDirection())) {
@@ -56,6 +72,9 @@ function Game() {
 		}
 
 		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), animate);
+		if (paintTunnels) {
+			painter.drawTunnels();
+		}
 
 	}
 
