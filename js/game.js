@@ -1,36 +1,64 @@
-function Game(context, levelImage, elementsImage) {
+function Game() {
 
-	var pacmanRunning = null;
-	
-	var level = null;
-	var pacman = null;
-	var ghost = null;
+	var canvas = new Canvas(),
+		runner = null, 
+		painter,
+		physics, 
+		pacman;
 
-	function runPacman() {
-		level.redrawGhostDots(ghost.getX(), ghost.getY(), ghost.getDirection());
-		pacman.setNextStep();
-		level.removeConsumedDots(pacman.getGeo().getX(), pacman.getGeo().getY(), pacman.getGeo().getDirection());
-		ghost.setNextStep();
-		if (pacman.getGeo().getX() < 0 || pacman.getGeo().getX() > 873) {
-			level.drawTunnelBorders();
+	document.addEventListener('canvasLoaded', loadGameObjects, false);
+
+	function loadGameObjects() {
+		painter = new Painter(canvas);
+		physics = new Physics();
+		pacman = new Pacman();
+		startGame();
+	}
+
+	function startGame() {
+		painter.drawLevel();
+		// painter.drawGrid();
+		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection());
+		runner = setInterval(generateFrame, 25);
+	}
+
+	function generateFrame() {
+		
+		painter.erasePacman(pacman.getX(), pacman.getY());
+
+		var requestedDirection = pacman.getRequestedDirection();
+		var oppositeDirection = physics.getOppositeDirection(pacman.getDirection());
+
+		// opposite direction requested, always ok??
+		if (requestedDirection && requestedDirection == oppositeDirection) {
+			pacman.setRequestedDirection(null);
+			pacman.setDirection(oppositeDirection);
+			pacman.move();
+			painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection());
+			return;
 		}
-		if (level.isCleared()) {
-			stopRunning();
+
+		var animate = true;
+		var blockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());
+		var newBlock = physics.isNewBlock(pacman.getX(), pacman.getY());
+		if (newBlock) {
+			if (pacman.getRequestedDirection() && physics.isValidNewBlockDirection(blockNumber, pacman.getRequestedDirection())) {
+				pacman.setDirection(pacman.getRequestedDirection());
+				pacman.setRequestedDirection(null);
+				pacman.move();
+			} else if (physics.isValidNewBlockDirection(blockNumber, pacman.getDirection())) {
+				pacman.move();
+			} else {
+				animate = false;
+			}
+		} else {
+			pacman.move();
 		}
-	};
 
-	function stopRunning() {
-		clearInterval(pacmanRunning);
-	};
+		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), animate);
 
-	function setupElements() {
-		level = new Level(context, levelImage, elementsImage);
-		pacman = new Pacman(context, elementsImage);
-	 	ghost = new Ghost(context, elementsImage);
-		new Controls(pacman);
-		pacmanRunning = setInterval(runPacman, 20);
-	};
-	
-	setupElements();
+	}
 
 }
+
+new Game();

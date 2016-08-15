@@ -3,38 +3,15 @@
 	<head>
 		<meta charset="utf-8">
 		<title>pacman</title>
-		<style type="text/css">
-			body, html {
-				background: black;
-			    width: 100%;
-			    height: 100%;
-			    margin: 0;
-			    padding: 0;
-			    overflow: hidden;
-			    text-align: center;
-			}
-			canvas {
-			    margin: 0 auto;
-			}
-			p {
-				position: fixed;
-				color: white;
-				font-size: 30px;
-				left: 40px;
-				font-family: "Lucida Console", Monaco, monospace;
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="css/style.css">
 	</head>
-	<body onload="new Run()">
-		<p>work in progress</p>
-		<canvas id="canvas"></canvas>
-		<script src="js/setup.js"></script>
+	<body>
+		<canvas></canvas>
+		<script src="js/canvas.js"></script>
+		<script src="js/physics.js"></script>
+		<script src="js/painter.js"></script>
 		<script src="js/pacman.js"></script>
-		<script src="js/ghost.js"></script>
-		<script src="js/geo.js"></script>
-		<script src="js/level.js"></script>
-		<script src="js/controls.js"></script>
 		<script src="js/game.js"></script>
-		<script src="js/run.js"></script>
+		<script src=""></script>
 	</body>
 </html>
