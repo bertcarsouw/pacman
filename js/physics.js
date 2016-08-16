@@ -1,25 +1,53 @@
 function Physics() {
 
 	this.getBlockNumber = getBlockNumber;
+	this.getActiveBlockNumber = getActiveBlockNumber;
 	this.isWalkableBlock = isWalkableBlock;
 	this.getOppositeDirection = getOppositeDirection;
 	this.isValidNewBlockDirection = isValidNewBlockDirection;
 	this.isNewBlock = isNewBlock;
+	this.getWalkableBlocks = getWalkableBlocks;
 
 	var UP = 1,
 		DOWN = 2,
 		LEFT = 3,
 		RIGHT = 4;
 
-	function getBlockNumber(x, y, direction) {
+	function getBlockNumber(x, y) {
 		var number = [];
 		number.push(Math.floor(x / 33) + 1);
 		number.push(Math.floor(y / 33) + 1);
 		return number;
 	}
 
+	function getActiveBlockNumber(x, y, direction) {
+		var activeBlockNumber = [];
+		var activeX = null;
+		var activeY = null;
+		if (direction == UP) {
+			activeY = Math.floor((y - 1) / 33);
+			activeX = Math.floor((x - 1) / 33);
+		} else if (direction == DOWN) {
+			activeY = Math.ceil((y - 1) / 33);
+			activeX = Math.floor((x - 1) / 33);
+		} else if (direction == LEFT) {
+			activeX = Math.floor((x - 1) / 33);
+			activeY = Math.floor((y - 1) / 33);
+		} else if (direction == RIGHT) {
+			activeX = Math.ceil((x - 1) / 33);
+			activeY = Math.floor((y - 1) / 33);
+		}
+		activeBlockNumber.push(activeX + 1);
+		activeBlockNumber.push(activeY + 1);
+		return activeBlockNumber;			
+	}
+
 	function isNewBlock(x, y) {
 		return (x - 1) % 33 == 0 && (y - 1) % 33 == 0;
+	}
+
+	function getWalkableBlocks() {
+		return walkableBlocks;
 	}
 
 	function isValidNewBlockDirection(currentBlockNumber, direction) {
@@ -58,8 +86,6 @@ function Physics() {
 			return DOWN;
 		} else if (direction == DOWN) {
 			return UP;
-		} else {
-			alert('fail');
 		}
 	}
 
@@ -182,7 +208,7 @@ function Physics() {
 		{ 'x': 13, 'y': 11 },
 		{ 'x': 16, 'y': 11 },
 		{ 'x': 22, 'y': 11 },
-		// 12th row
+		// 11th row
 		{ 'x': 7,  'y': 12 },
 		{ 'x': 10, 'y': 12 },
 		{ 'x': 11, 'y': 12 },
@@ -195,17 +221,17 @@ function Physics() {
 		{ 'x': 18, 'y': 12 },
 		{ 'x': 19, 'y': 12 },
 		{ 'x': 22, 'y': 12 },
-		// 13th row
+		// 12th row
 		{ 'x':  7, 'y': 13 },
 		{ 'x': 10, 'y': 13 },
 		{ 'x': 19, 'y': 13 },
 		{ 'x': 22, 'y': 13 },
-		// 14th row
+		// 13th row
 		{ 'x':  7, 'y': 14 },
 		{ 'x': 10, 'y': 14 },
 		{ 'x': 19, 'y': 14 },
 		{ 'x': 22, 'y': 14 },
-		// 15th row
+		// 14th row
 		{ 'x': -1, 'y': 15 },
 		{ 'x':  0, 'y': 15 },
 		{ 'x':  1, 'y': 15 },
@@ -229,7 +255,173 @@ function Physics() {
 		{ 'x': 27, 'y': 15 },
 		{ 'x': 28, 'y': 15 },
 		{ 'x': 29, 'y': 15 },
-
+		// 15th row
+		{ 'x':  7, 'y': 16 },
+		{ 'x': 10, 'y': 16 },
+		{ 'x': 19, 'y': 16 },
+		{ 'x': 22, 'y': 16 },
+		// 16th row
+		{ 'x':  7, 'y': 17 },
+		{ 'x': 10, 'y': 17 },
+		{ 'x': 19, 'y': 17 },
+		{ 'x': 22, 'y': 17 },
+		// 17th row
+		{ 'x':  7, 'y': 18 },
+		{ 'x': 10, 'y': 18 },
+		{ 'x': 11, 'y': 18 },
+		{ 'x': 12, 'y': 18 },
+		{ 'x': 13, 'y': 18 },
+		{ 'x': 14, 'y': 18 },
+		{ 'x': 15, 'y': 18 },
+		{ 'x': 16, 'y': 18 },
+		{ 'x': 17, 'y': 18 },
+		{ 'x': 18, 'y': 18 },
+		{ 'x': 19, 'y': 18 },
+		{ 'x': 22, 'y': 18 },
+		// 18th row
+		{ 'x':  7, 'y': 19 },
+		{ 'x': 10, 'y': 19 },
+		{ 'x': 19, 'y': 19 },
+		{ 'x': 22, 'y': 19 },
+		// 19th row
+		{ 'x':  7, 'y': 20 },
+		{ 'x': 10, 'y': 20 },
+		{ 'x': 19, 'y': 20 },
+		{ 'x': 22, 'y': 20 },
+		// 20th row
+		{ 'x':  2, 'y': 21 },
+		{ 'x':  3, 'y': 21 },
+		{ 'x':  4, 'y': 21 },
+		{ 'x':  5, 'y': 21 },
+		{ 'x':  6, 'y': 21 },
+		{ 'x':  7, 'y': 21 },
+		{ 'x':  8, 'y': 21 },
+		{ 'x':  9, 'y': 21 },
+		{ 'x': 10, 'y': 21 },
+		{ 'x': 11, 'y': 21 },
+		{ 'x': 12, 'y': 21 },
+		{ 'x': 13, 'y': 21 },
+		{ 'x': 16, 'y': 21 },
+		{ 'x': 17, 'y': 21 },
+		{ 'x': 18, 'y': 21 },
+		{ 'x': 19, 'y': 21 },
+		{ 'x': 20, 'y': 21 },
+		{ 'x': 21, 'y': 21 },
+		{ 'x': 22, 'y': 21 },
+		{ 'x': 23, 'y': 21 },
+		{ 'x': 24, 'y': 21 },
+		{ 'x': 25, 'y': 21 },
+		{ 'x': 26, 'y': 21 },
+		{ 'x': 27, 'y': 21 },
+		// 21th row
+		{ 'x': 2,  'y': 22 },
+		{ 'x': 7,  'y': 22 },
+		{ 'x': 13, 'y': 22 },
+		{ 'x': 16, 'y': 22 },
+		{ 'x': 22, 'y': 22 },
+		{ 'x': 27, 'y': 22 },
+		// 22th row
+		{ 'x': 2,  'y': 23 },
+		{ 'x': 7,  'y': 23 },
+		{ 'x': 13, 'y': 23 },
+		{ 'x': 16, 'y': 23 },
+		{ 'x': 22, 'y': 23 },
+		{ 'x': 27, 'y': 23 },
+		// 23th row
+		{ 'x':  2, 'y': 24 },
+		{ 'x':  3, 'y': 24 },
+		{ 'x':  4, 'y': 24 },
+		{ 'x':  7, 'y': 24 },
+		{ 'x':  8, 'y': 24 },
+		{ 'x':  9, 'y': 24 },
+		{ 'x': 10, 'y': 24 },
+		{ 'x': 11, 'y': 24 },
+		{ 'x': 12, 'y': 24 },
+		{ 'x': 13, 'y': 24 },
+		{ 'x': 14, 'y': 24 },
+		{ 'x': 15, 'y': 24 },
+		{ 'x': 16, 'y': 24 },
+		{ 'x': 17, 'y': 24 },
+		{ 'x': 18, 'y': 24 },
+		{ 'x': 19, 'y': 24 },
+		{ 'x': 20, 'y': 24 },
+		{ 'x': 21, 'y': 24 },
+		{ 'x': 22, 'y': 24 },
+		{ 'x': 25, 'y': 24 },
+		{ 'x': 26, 'y': 24 },
+		{ 'x': 27, 'y': 24 },
+		// 24th row
+		{ 'x': 4,  'y': 25 },
+		{ 'x': 7,  'y': 25 },
+		{ 'x': 10, 'y': 25 },
+		{ 'x': 19, 'y': 25 },
+		{ 'x': 22, 'y': 25 },
+		{ 'x': 25, 'y': 25 },
+		// 25th row
+		{ 'x': 4,  'y': 26 },
+		{ 'x': 7,  'y': 26 },
+		{ 'x': 10, 'y': 26 },
+		{ 'x': 19, 'y': 26 },
+		{ 'x': 22, 'y': 26 },
+		{ 'x': 25, 'y': 26 },
+		// 26th row
+		{ 'x':  2, 'y': 27 },
+		{ 'x':  3, 'y': 27 },
+		{ 'x':  4, 'y': 27 },
+		{ 'x':  5, 'y': 27 },
+		{ 'x':  6, 'y': 27 },
+		{ 'x':  7, 'y': 27 },
+		{ 'x': 10, 'y': 27 },
+		{ 'x': 11, 'y': 27 },
+		{ 'x': 12, 'y': 27 },
+		{ 'x': 13, 'y': 27 },
+		{ 'x': 16, 'y': 27 },
+		{ 'x': 17, 'y': 27 },
+		{ 'x': 18, 'y': 27 },
+		{ 'x': 19, 'y': 27 },
+		{ 'x': 22, 'y': 27 },
+		{ 'x': 23, 'y': 27 },
+		{ 'x': 24, 'y': 27 },
+		{ 'x': 25, 'y': 27 },
+		{ 'x': 26, 'y': 27 },
+		{ 'x': 27, 'y': 27 },
+		// 27th row
+		{ 'x':  2, 'y': 28 },
+		{ 'x': 13, 'y': 28 },
+		{ 'x': 16, 'y': 28 },
+		{ 'x': 27, 'y': 28 },
+		// 28th row
+		{ 'x':  2, 'y': 29 },
+		{ 'x': 13, 'y': 29 },
+		{ 'x': 16, 'y': 29 },
+		{ 'x': 27, 'y': 29 },
+		// 29th row
+		{ 'x':  2, 'y': 30 },
+		{ 'x':  3, 'y': 30 },
+		{ 'x':  4, 'y': 30 },
+		{ 'x':  5, 'y': 30 },
+		{ 'x':  6, 'y': 30 },
+		{ 'x':  7, 'y': 30 },
+		{ 'x':  8, 'y': 30 },
+		{ 'x':  9, 'y': 30 },
+		{ 'x': 10, 'y': 30 },
+		{ 'x': 11, 'y': 30 },
+		{ 'x': 12, 'y': 30 },
+		{ 'x': 13, 'y': 30 },
+		{ 'x': 14, 'y': 30 },
+		{ 'x': 15, 'y': 30 },
+		{ 'x': 16, 'y': 30 },
+		{ 'x': 17, 'y': 30 },
+		{ 'x': 18, 'y': 30 },
+		{ 'x': 19, 'y': 30 },
+		{ 'x': 20, 'y': 30 },
+		{ 'x': 21, 'y': 30 },
+		{ 'x': 22, 'y': 30 },
+		{ 'x': 23, 'y': 30 },
+		{ 'x': 24, 'y': 30 },
+		{ 'x': 25, 'y': 30 },
+		{ 'x': 26, 'y': 30 },
+		{ 'x': 27, 'y': 30 }
 	]
 
 }

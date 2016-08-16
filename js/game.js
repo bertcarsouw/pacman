@@ -3,8 +3,10 @@ function Game() {
 	var canvas = new Canvas(),
 		runner = null, 
 		painter,
+		level,
 		physics, 
-		pacman;
+		pacman,
+		controls;
 
 	document.addEventListener('canvasLoaded', loadGameObjects, false);
 
@@ -12,15 +14,20 @@ function Game() {
 		painter = new Painter(canvas);
 		physics = new Physics();
 		pacman = new Pacman();
+		controls = new Controls(pacman);
 		startGame();
 	}
 
 	function startGame() {
 		painter.drawLevel();
 		// painter.drawGrid();
+		level = new Level(physics.getWalkableBlocks());
+		painter.drawDots(level.getDots());
 		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection());
-		runner = setInterval(generateFrame, 12);
+		runner = setInterval(generateFrame, 18);
 	}
+
+	var points = 0;
 
 	function generateFrame() {
 		
@@ -72,10 +79,20 @@ function Game() {
 		}
 
 		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), animate);
+
+		var activeBlock = physics.getActiveBlockNumber(pacman.getX(), pacman.getY(), pacman.getDirection());
+		if (level.removeDot(activeBlock)) {
+			painter.eraseDot(activeBlock);
+		}
+
 		if (paintTunnels) {
 			painter.drawTunnels();
 		}
 
+		if (level.finished()) {
+			alert('points');
+		}
+		
 	}
 
 }

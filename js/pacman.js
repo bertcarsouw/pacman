@@ -5,13 +5,10 @@ function Pacman() {
 	this.setX = setX;
 	this.setY = setY;
 	this.move = move;
-	this.undoMove = undoMove;
 	this.getDirection = getDirection;
 	this.setDirection = setDirection;
 	this.getRequestedDirection = getRequestedDirection;
 	this.setRequestedDirection = setRequestedDirection;
-
-	window.addEventListener('keydown', handleKey);
 
 	var direction = 4,
 		requestedDirection = 4,
@@ -36,18 +33,6 @@ function Pacman() {
 
 	function setRequestedDirection(newRequestedDirection) {
 		requestedDirection = newRequestedDirection;
-	}
-
-	function handleKey(event) {
-		if (event.keyCode == 38) {
-			requestedDirection = UP;
-		} else if (event.keyCode == 40) {
-			requestedDirection = DOWN;
-		} else if (event.keyCode == 37) {
-			requestedDirection = LEFT;
-		} else if (event.keyCode == 39) {
-			requestedDirection = RIGHT;
-		}
 	}
 
 	function getX() {
@@ -76,18 +61,6 @@ function Pacman() {
 		} else if (direction == RIGHT) {
 			x += 3;
 		}
-	}
-
-	function undoMove() {
-		if (direction == UP) {
-			y += 3;
-		} else if (direction == DOWN) {
-			y -= 3;
-		} else if (direction == LEFT) {
-			x += 3;
-		} else if (direction == RIGHT) {
-			x -= 3;
-		}	
 	}
 
 }

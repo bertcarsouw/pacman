@@ -5,6 +5,8 @@ function Painter(canvas) {
 	this.erasePacman = erasePacman;
 	this.drawGrid = drawGrid;
 	this.drawTunnels = drawTunnels;
+	this.drawDots = drawDots;
+	this.eraseDot = eraseDot;
 
 	var context,
 		levelImage,
@@ -13,7 +15,7 @@ function Painter(canvas) {
 		PACMAN_CLOSED = 3,
 		pacmanAnimationState = PACMAN_OPEN,
 		speedCounter = 0,
-		animationSpeed = 2;
+		animationSpeed = 3;
 
 	var UP = 1,
 		DOWN = 2,
@@ -63,7 +65,7 @@ function Painter(canvas) {
 			y - 11.5, 
 			52, 52
 		);
-	};
+	}
 
 	function erasePacman(x, y) {
 		context.clearRect(x - 11.5, y - 11.5, 52, 52);
@@ -97,8 +99,11 @@ function Painter(canvas) {
 				return [644, 260];
 			}
 		}
-	};
+	}
 
+	/*
+	 *	Used for dev purposes
+	 */
 	function drawGrid() {
 		var x = 1;
 		var y = 33 * 31;
@@ -119,6 +124,22 @@ function Painter(canvas) {
 			context.stroke();
 			y += 33;	
 		}
-	};
+	}
 
-};
+	function drawDots(walkableDots) {
+		context.fillStyle = "#FFFFFF";
+		walkableDots.forEach(function(dot) {
+			if ((dot.x <= 0 || dot.x == 29) && dot.y <= 15) {
+				return;	
+			} 
+			var x = (dot.x - 1) * 33 + 13.5;
+			var y = (dot.y - 1) * 33 + 13.5;
+			context.fillRect(x, y, 8, 8);
+		});
+	}
+
+	function eraseDot(activeBlock) {
+		context.clearRect((activeBlock[0] - 1) * 33 + 1, (activeBlock[1] - 1) * 33 + 1, 33, 33);
+	}
+
+}
