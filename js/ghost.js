@@ -3,6 +3,7 @@ function Ghost() {
 	this.getX = getX;
 	this.getY = getY;
 	this.getDirection = getDirection;
+	this.setDirection = setDirection;
 	this.move = move;
 	
 	var x = 33 * 26 + 1,
@@ -25,6 +26,10 @@ function Ghost() {
 
 	function getDirection() {
 		return direction;
+	}
+
+	function setDirection(newDirection) {
+		direction = newDirection;
 	}
 
 	function move() {

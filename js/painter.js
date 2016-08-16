@@ -9,6 +9,7 @@ function Painter(canvas) {
 	this.drawTunnels = drawTunnels;
 	this.drawDots = drawDots;
 	this.eraseDot = eraseDot;
+	this.drawPath = drawPath;
 
 	var context,
 		levelImage,
@@ -164,6 +165,14 @@ function Painter(canvas) {
 
 	function eraseDot(activeBlock) {
 		context.clearRect((activeBlock[0] - 1) * 33 + 1, (activeBlock[1] - 1) * 33 + 1, 33, 33);
+	}
+
+	function drawPath(pathInfo) {
+		var currentBlock = pathInfo;
+		while(currentBlock) {
+			context.fillRect((currentBlock.x - 1) * 33, (currentBlock.y - 1) * 33, 33, 33);
+			currentBlock = currentBlock.parent;
+		}
 	}
 
 }

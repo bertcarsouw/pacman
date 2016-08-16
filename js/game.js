@@ -7,6 +7,7 @@ function Game() {
 		physics, 
 		pacman,
 		controls,
+		pathfinder,
 		blinky;
 
 	document.addEventListener('canvasLoaded', loadGameObjects, false);
@@ -14,6 +15,7 @@ function Game() {
 	function loadGameObjects() {
 		painter = new Painter(canvas);
 		physics = new Physics();
+		pathfinder = new Pathfinder(physics);
 		pacman = new Pacman();
 		controls = new Controls(pacman);
 		blinky = new Ghost();
@@ -111,7 +113,11 @@ function Game() {
 			if (physics.isValidNewBlockDirection(blockNumber, blinky.getDirection())) {
 				blinky.move();
 			} else {
-				// create a* pathfinder
+				var pacmanPosition = physics.getBlockNumber(pacman.getX(), pacman.getY());
+				var pathToPacman = pathfinder.find(blockNumber, pacmanPosition, blinky.getDirection());
+				var directionToPacman = pathfinder.getPathDirection(pathToPacman);
+				blinky.setDirection(directionToPacman);
+				blinky.move();
 			}
 		} else {
 			blinky.move();
