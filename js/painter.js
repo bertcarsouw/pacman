@@ -2,7 +2,9 @@ function Painter(canvas) {
 
 	this.drawLevel = drawLevel;
 	this.drawPacman = drawPacman;
+	this.drawBlinky = drawBlinky;
 	this.erasePacman = erasePacman;
+	this.eraseGhost = eraseGhost;
 	this.drawGrid = drawGrid;
 	this.drawTunnels = drawTunnels;
 	this.drawDots = drawDots;
@@ -56,10 +58,11 @@ function Painter(canvas) {
 		} else {
 			pacmanAnimationState = 4;
 		}
+		var pacImage = getPacmanImage(direction, pacmanAnimationState);
 		context.drawImage(
 			commonSprite, 
-			getPacmanImage(direction, pacmanAnimationState)[0], 
-			getPacmanImage(direction, pacmanAnimationState)[1], 
+			pacImage[0], 
+			pacImage[1], 
 			52, 52, 
 			x - 11.5, 
 			y - 11.5, 
@@ -69,6 +72,10 @@ function Painter(canvas) {
 
 	function erasePacman(x, y) {
 		context.clearRect(x - 11.5, y - 11.5, 52, 52);
+	}
+
+	function eraseGhost(x, y) {
+		context.clearRect(x - 13.5, y - 13.5, 56, 56);
 	}
 
 	function getPacmanImage(direction, status) {
@@ -99,6 +106,23 @@ function Painter(canvas) {
 				return [644, 260];
 			}
 		}
+	}
+
+	function drawBlinky(x, y, direction) {
+		var blinkyImage = getBlinkyImage(x, y, direction);
+		context.drawImage(
+			commonSprite, 
+			blinkyImage[0], 
+			blinkyImage[1], 
+			56, 56, 
+			x - 13.5, 
+			y - 13.5, 
+			56, 56
+		);
+	}
+
+	function getBlinkyImage(direction) {
+		return [964, 4];
 	}
 
 	/*
