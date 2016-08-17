@@ -7,6 +7,7 @@ function Physics() {
 	this.isValidNewBlockDirection = isValidNewBlockDirection;
 	this.isNewBlock = isNewBlock;
 	this.getWalkableBlocks = getWalkableBlocks;
+	this.isCrossroads = isCrossroads;
 
 	var UP = 1,
 		DOWN = 2,
@@ -18,6 +19,15 @@ function Physics() {
 		number.push(Math.floor(x / 33) + 1);
 		number.push(Math.floor(y / 33) + 1);
 		return number;
+	}
+
+	function isCrossroads(blockNumber) {
+		for (var counter = 0; counter < crossroads.length; counter++) {
+			if (crossroads[counter].x == blockNumber[0] && crossroads[counter].y == blockNumber[1]) {
+				return true;
+			}	
+		}
+		return false;
 	}
 
 	function getActiveBlockNumber(x, y, direction) {
@@ -88,6 +98,43 @@ function Physics() {
 			return UP;
 		}
 	}
+
+	var crossroads = [
+		{ 'x':  7, 'y': 2 },
+		{ 'x': 22, 'y': 2 },
+		{ 'x':  2, 'y': 6 },
+		{ 'x':  7, 'y': 6 },
+		{ 'x': 10, 'y': 6 },
+		{ 'x': 13, 'y': 6 },
+		{ 'x': 16, 'y': 6 },
+		{ 'x': 19, 'y': 6 },
+		{ 'x': 22, 'y': 6 },
+		{ 'x': 27, 'y': 6 },
+		{ 'x':  7, 'y': 9 },
+		{ 'x': 22, 'y': 9 },
+		{ 'x': 13, 'y': 12 },
+		{ 'x': 16, 'y': 12 },
+		{ 'x':  7, 'y': 15 },
+		{ 'x': 10, 'y': 15 },
+		{ 'x': 19, 'y': 15 },
+		{ 'x': 22, 'y': 15 },
+		{ 'x': 10, 'y': 18 },
+		{ 'x': 19, 'y': 18 },
+		{ 'x':  7, 'y': 21 },
+		{ 'x': 10, 'y': 21 },
+		{ 'x': 19, 'y': 21 },
+		{ 'x': 22, 'y': 21 },
+		{ 'x':  7, 'y': 24 },
+		{ 'x': 10, 'y': 24 },
+		{ 'x': 13, 'y': 24 },
+		{ 'x': 16, 'y': 24 },
+		{ 'x': 19, 'y': 24 },
+		{ 'x': 22, 'y': 24 },
+		{ 'x':  4, 'y': 27 },
+		{ 'x': 25, 'y': 27 },
+		{ 'x': 13, 'y': 30 },
+		{ 'x': 16, 'y': 30 }
+	]
 
 	var walkableBlocks = [
 		// 1st row

@@ -101,6 +101,7 @@ function Game() {
 		}
 		
 		calculateBlinky();
+		
 		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), animate);
 		painter.drawBlinky(blinky.getX(), blinky.getY(), 2);
 
@@ -110,7 +111,13 @@ function Game() {
 		var newBlock = physics.isNewBlock(blinky.getX(), blinky.getY());
 		var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
 		if (newBlock) {
-			if (physics.isValidNewBlockDirection(blockNumber, blinky.getDirection())) {
+			if (physics.isCrossroads(blockNumber)) {
+				var pacmanPosition = physics.getBlockNumber(pacman.getX(), pacman.getY());
+				var pathToPacman = pathfinder.find(blockNumber, pacmanPosition, blinky.getDirection());
+				var directionToPacman = pathfinder.getPathDirection(pathToPacman);
+				blinky.setDirection(directionToPacman);
+				blinky.move();
+			} else if (physics.isValidNewBlockDirection(blockNumber, blinky.getDirection())) {
 				blinky.move();
 			} else {
 				var pacmanPosition = physics.getBlockNumber(pacman.getX(), pacman.getY());

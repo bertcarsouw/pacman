@@ -11,14 +11,22 @@ function Pathfinder(physics) {
 		LEFT = 3,
 		RIGHT = 4;
 
-	function getNeighbouringBlocks(activeBlock) {
+	function getNeighbouringBlocks(activeBlock, prohibitedDirection) {
 		var result = [];
 		var walkableBlocks = physics.getWalkableBlocks();
 		var possibleNeighbours = [];
-		possibleNeighbours.push({ 'x': activeBlock.x + 1, 'y': activeBlock.y });
-		possibleNeighbours.push({ 'x': activeBlock.x - 1, 'y': activeBlock.y });
-		possibleNeighbours.push({ 'x': activeBlock.x, 'y': activeBlock.y + 1 });
-		possibleNeighbours.push({ 'x': activeBlock.x, 'y': activeBlock.y - 1});
+		if (prohibitedDirection != RIGHT) {
+			possibleNeighbours.push({ 'x': activeBlock.x + 1, 'y': activeBlock.y });
+		}
+		if (prohibitedDirection != LEFT) {
+			possibleNeighbours.push({ 'x': activeBlock.x - 1, 'y': activeBlock.y });
+		}
+		if (prohibitedDirection != DOWN) {
+			possibleNeighbours.push({ 'x': activeBlock.x, 'y': activeBlock.y + 1 });
+		}
+		if (prohibitedDirection != UP) {
+			possibleNeighbours.push({ 'x': activeBlock.x, 'y': activeBlock.y - 1});
+		}
 		possibleNeighbours.forEach(function(possibleNeighbour) {
 			walkableBlocks.forEach(function(walkableBlock) {
 				if (equalBlocks(possibleNeighbour, walkableBlock)) {
@@ -38,7 +46,7 @@ function Pathfinder(physics) {
 		openList.push(currentNode);
 		var done = false;
 		var finalPath = null;
-		// var firstNode = true;
+		var firstNode = true;
 		while (openList.length != 0 && !done) {
 			var currentBlockIndex = getLowestFIndex();
 			var currentBlock = openList[currentBlockIndex];
@@ -49,46 +57,12 @@ function Pathfinder(physics) {
 			closedList.push(currentBlock);
 			openList.splice(currentBlockIndex, 1);
 			var neighbours = null;
-			/*
-			 *	TODO: 	implement evil masterplan to remove the previously visited block
-			 *			from becoming a neighbour so the ghost cannot move in opposite direction
-			 */
-			// if (firstNode) {
-				// var unfilteredNeighbours = getNeighbouringBlocks(currentBlock);
-				// if (direction == UP) {
-				// 	unfilteredNeighbours.forEach(function(unfilteredNeighbour, index) {
-				// 		if (currentBlock.y + 1 == unfilteredNeighbour.y) {
-				// 			console.log('remving neighbour');
-				// 			unfilteredNeighbours.splice(index, 1);
-				// 		}
-				// 	});				
-				// } else if (direction == DOWN) {
-				// 	unfilteredNeighbours.forEach(function(unfilteredNeighbour, index) {
-				// 		if (currentBlock.y - 1 == unfilteredNeighbour.y) {
-				// 			console.log('remving neighbour');
-				// 			unfilteredNeighbours.splice(index, 1);
-				// 		}
-				// 	});
-				// } else if (direction == LEFT) {
-				// 	unfilteredNeighbours.forEach(function(unfilteredNeighbour, index) {
-				// 		if (currentBlock.x + 1 == unfilteredNeighbour.x) {
-				// 			console.log('remving neighbour');
-				// 			unfilteredNeighbours.splice(index, 1);
-				// 		}
-				// 	});
-				// } else if (direction == RIGHT) {
-				// 	unfilteredNeighbours.forEach(function(unfilteredNeighbour, index) {
-				// 		if (currentBlock.x - 1 == unfilteredNeighbour.x) {
-				// 			console.log('remving neighbour');
-				// 			unfilteredNeighbours.splice(index, 1);
-				// 		}
-				// 	});
-				// }
-				// neighbours = unfilteredNeighbours;
-			// } else {
-				// firstNode = false;
-			neighbours = getNeighbouringBlocks(currentBlock);
-			// }
+			if (firstNode) {
+				firstNode = false;
+				neighbours = getNeighbouringBlocks(currentBlock, physics.getOppositeDirection(direction));
+			} else {
+				neighbours = getNeighbouringBlocks(currentBlock, 99);
+			}
 			neighbours.forEach(function(neighbour) {
 				if (!inOpenList(neighbour)) {
 					neighbour.parent = currentBlock;
