@@ -8,6 +8,7 @@ function Painter(canvas) {
 	this.drawGrid = drawGrid;
 	this.drawTunnels = drawTunnels;
 	this.drawDots = drawDots;
+	this.drawDot = drawDot;
 	this.eraseDot = eraseDot;
 	this.drawPath = drawPath;
 
@@ -57,7 +58,7 @@ function Painter(canvas) {
 		if (animate) {
 			setNextPacmanAnimationState();
 		} else {
-			pacmanAnimationState = 4;
+			// pacmanAnimationState = 4;
 		}
 		var pacImage = getPacmanImage(direction, pacmanAnimationState);
 		context.drawImage(
@@ -161,6 +162,13 @@ function Painter(canvas) {
 			var y = (dot.y - 1) * 33 + 13.5;
 			context.fillRect(x, y, 8, 8);
 		});
+	}
+
+	function drawDot(blockNumber) {
+		var x = (blockNumber.x - 1) * 33 + 13.5;
+		var y = (blockNumber.y - 1) * 33 + 13.5;
+		context.fillStyle = "#FFFFFF";
+		context.fillRect(x, y, 8, 8);
 	}
 
 	function eraseDot(activeBlock) {

@@ -1,7 +1,8 @@
 function Game() {
 
 	var canvas = new Canvas(),
-		runner = null, 
+		runner = null,
+		runGhost = null, 
 		painter,
 		level,
 		physics, 
@@ -28,7 +29,8 @@ function Game() {
 		level = new Level(physics.getWalkableBlocks());
 		painter.drawDots(level.getDots());
 		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection());
-		runner = setInterval(generateFrame, 18);
+		runner = setInterval(generateFrame, 12);
+		runGhost = setInterval(generateBlinky, 25);
 	}
 
 	var points = 0;
@@ -36,7 +38,6 @@ function Game() {
 	function generateFrame() {
 		
 		painter.erasePacman(pacman.getX(), pacman.getY());
-		painter.eraseGhost(blinky.getX(), blinky.getY());
 
 		var requestedDirection = pacman.getRequestedDirection();
 		var oppositeDirection = physics.getOppositeDirection(pacman.getDirection());
@@ -48,7 +49,6 @@ function Game() {
 			pacman.setRequestedDirection(null);
 			pacman.setDirection(oppositeDirection);
 			pacman.move();
-			painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection());
 			wentInOppositeDirection  = true;
 		}
 
@@ -56,9 +56,7 @@ function Game() {
 		var blockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());
 
 		// check if pacman goes into tunnel
-		var paintTunnels = false;
 		if (blockNumber[1] == 15) {
-			paintTunnels = true;
 			if (blockNumber[0] == -1) {
 				pacman.setDirection(3);
 				pacman.setX(28 * 33 + 4);
@@ -92,22 +90,16 @@ function Game() {
 			painter.eraseDot(activeBlock);
 		}
 
-		if (paintTunnels) {
-			painter.drawTunnels();
-		}
-
 		if (level.finished()) {
 			alert('points');
 		}
 		
-		calculateBlinky();
-		
-		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), animate);
-		painter.drawBlinky(blinky.getX(), blinky.getY(), 2);
+		drawMovingObjects(animate);
 
 	}
 
-	function calculateBlinky() {
+	function generateBlinky() {
+		painter.eraseGhost(blinky.getX(), blinky.getY());
 		var newBlock = physics.isNewBlock(blinky.getX(), blinky.getY());
 		var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
 		if (newBlock) {
@@ -129,6 +121,28 @@ function Game() {
 		} else {
 			blinky.move();
 		}
+
+		redrawGhostDots(blockNumber);
+		drawMovingObjects(false);
+	}
+
+	function redrawGhostDots(blockNumber) {
+		var neighbours = [];
+		neighbours.push({ 'x': blockNumber[0] - 1, 'y': blockNumber[1] });
+		neighbours.push({ 'x': blockNumber[0] + 1, 'y': blockNumber[1] });
+		neighbours.push({ 'x': blockNumber[0], 'y': blockNumber[1] + 1 });
+		neighbours.push({ 'x': blockNumber[0], 'y': blockNumber[1] - 1 });
+		neighbours.forEach(function(neighbour) {
+			if (level.isDot(neighbour)) {
+				painter.drawDot(neighbour);
+			}
+		});		
+	}
+
+	function drawMovingObjects(animatePacman) {
+		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), animatePacman);
+		painter.drawBlinky(blinky.getX(), blinky.getY(), 2);
+		painter.drawTunnels();
 	}
 
 }

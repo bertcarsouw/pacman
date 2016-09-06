@@ -5,6 +5,7 @@ function Level(walkableBlocks) {
 	this.removeDot = removeDot;
 	this.finished = finished;
 	this.getDots = getDots;
+	this.isDot = isDot;
 
 	var UP = 1,
 		DOWN = 2,
@@ -18,6 +19,7 @@ function Level(walkableBlocks) {
 	}
 
 	function finished() {
+		console.log(dots)
 		return dots.length == 0;
 	}
 
@@ -56,6 +58,17 @@ function Level(walkableBlocks) {
 			}
 		}
 		return false;
+	}
+
+	function isDot(blockNumber) {
+		var dotFound = false;
+		for (var counter = 0; counter < dots.length; counter++) {
+			if (dots[counter].x == blockNumber.x && dots[counter].y == blockNumber.y) {
+				dotFound = true;
+				counter = 9999;
+			}
+		}
+		return dotFound;
 	}
 
 }
