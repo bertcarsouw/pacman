@@ -29,8 +29,8 @@ function Game() {
 		level = new Level(physics.getWalkableBlocks());
 		painter.drawDots(level.getDots());
 		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection());
-		runner = setInterval(generateFrame, 12);
-		runGhost = setInterval(generateBlinky, 25);
+		runner = setInterval(generateFrame, 16);
+		runGhost = setInterval(generateBlinky, 22);
 	}
 
 	var points = 0;
@@ -121,7 +121,6 @@ function Game() {
 		} else {
 			blinky.move();
 		}
-
 		redrawGhostDots(blockNumber);
 		drawMovingObjects(false);
 	}
@@ -141,7 +140,7 @@ function Game() {
 
 	function drawMovingObjects(animatePacman) {
 		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), animatePacman);
-		painter.drawBlinky(blinky.getX(), blinky.getY(), 2);
+		painter.drawBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen());
 		painter.drawTunnels();
 	}
 

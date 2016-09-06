@@ -110,8 +110,8 @@ function Painter(canvas) {
 		}
 	}
 
-	function drawBlinky(x, y, direction) {
-		var blinkyImage = getBlinkyImage(x, y, direction);
+	function drawBlinky(x, y, direction, open) {
+		var blinkyImage = getBlinkyImage(direction, open);
 		context.drawImage(
 			commonSprite, 
 			blinkyImage[0], 
@@ -123,8 +123,31 @@ function Painter(canvas) {
 		);
 	}
 
-	function getBlinkyImage(direction) {
-		return [964, 4];
+	function getBlinkyImage(direction, open) {
+		if (direction == RIGHT) {
+			if (open) {
+				return [964, 4];
+			}
+			return [964, 68];
+		} 
+		if (direction == DOWN) {
+			if (open) {
+				return [964, 132];
+			}
+			return [964, 196];
+		}
+		if (direction == LEFT) {
+			if (open) {
+				return [964, 260];
+			}
+			return [964, 324];
+		}
+		if (direction == UP) {
+			if (open) {
+				return [964, 388];
+			}
+			return [964, 452];
+		}
 	}
 
 	/*
