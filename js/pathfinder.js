@@ -1,7 +1,9 @@
 function Pathfinder(physics) {
 
+	// superfancy a* pathfinding algorithm which is no longer needed :(
 	this.find = find;
 	this.getPathDirection = getPathDirection;
+	this.calculateDirection = calculateDirection;
 
 	var openList = [];
 	var closedList = [];
@@ -182,4 +184,76 @@ function Pathfinder(physics) {
 			}
 		}
 	}
+
+	// path decision algorithm to replace the a*
+	function calculateDirection(block, end, direction) {
+		
+		var invalidDirection = physics.getOppositeDirection(direction);
+		
+		var possibleDirections = [];
+
+		if (UP !== invalidDirection) {
+			if (physics.isWalkableBlock([block[0], block[1] - 1])) {
+				possibleDirections.push(UP);
+			}
+		}
+
+		if (DOWN !== invalidDirection) {
+			if (physics.isWalkableBlock([block[0], block[1] + 1])) {
+				possibleDirections.push(DOWN);
+			}	
+		}
+
+		if (LEFT !== invalidDirection) {
+			if (physics.isWalkableBlock([block[0] - 1, block[1]])) {
+				possibleDirections.push(LEFT);
+			}	
+		}
+
+		if (RIGHT !== invalidDirection) {
+			if (physics.isWalkableBlock([block[0] + 1, block[1]])) {
+				possibleDirections.push(RIGHT);
+			}
+		}
+
+		var shortest = 9999;
+		var finalDirection = undefined;
+		possibleDirections.forEach(function(direction) {
+			
+			var directionBlock = [];
+			
+			if (direction == UP) {
+				directionBlock.push(block[0]);
+				directionBlock.push(block[1] - 1);
+			} else if (direction == DOWN) {
+				directionBlock.push(block[0]);
+				directionBlock.push(block[1] + 1);
+			} else if (direction == RIGHT) {	
+				directionBlock.push(block[0] + 1);
+				directionBlock.push(block[1]);
+			} else if (direction == LEFT) {
+				directionBlock.push(block[0] - 1);
+				directionBlock.push(block[1]);
+			}
+
+			var distance = calculateDirectDistance(directionBlock, end);
+
+			if (distance < shortest) {
+				shortest = distance;
+				finalDirection = direction;
+			}
+
+		});
+
+		return finalDirection;
+
+	}
+
+	function calculateDirectDistance(block, end) {
+		var aSq = Math.abs(block[0] - end[0]);
+		var bSq = Math.abs(block[1] - end[1]);
+		var cSq = aSq + bSq;
+		return Math.sqrt(cSq);
+	}
+
 }

@@ -19,7 +19,6 @@ function Level(walkableBlocks) {
 	}
 
 	function finished() {
-		console.log(dots)
 		return dots.length == 0;
 	}
 

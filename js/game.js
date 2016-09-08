@@ -113,8 +113,7 @@ function Game() {
 				blinky.move();
 			} else {
 				var pacmanPosition = physics.getBlockNumber(pacman.getX(), pacman.getY());
-				var pathToPacman = pathfinder.find(blockNumber, pacmanPosition, blinky.getDirection());
-				var directionToPacman = pathfinder.getPathDirection(pathToPacman);
+				var directionToPacman = pathfinder.calculateDirection(blockNumber, pacmanPosition, blinky.getDirection());
 				blinky.setDirection(directionToPacman);
 				blinky.move();
 			}
@@ -124,7 +123,7 @@ function Game() {
 		redrawGhostDots(blockNumber);
 		drawMovingObjects(false);
 	}
-
+// calculateDirection
 	function redrawGhostDots(blockNumber) {
 		var neighbours = [];
 		neighbours.push({ 'x': blockNumber[0] - 1, 'y': blockNumber[1] });
