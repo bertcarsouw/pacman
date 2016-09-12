@@ -1,148 +1,138 @@
 function Game() {
 
+	var pacmanHandler = null,
+		blinkyHandler = null;
+
 	var canvas = new Canvas(),
-		runner = null,
-		runGhost = null, 
-		painter,
-		level,
-		physics, 
-		pacman,
-		controls,
-		pathfinder,
-		blinky;
+		physics = new Physics(),
+		printer = new Printer(canvas),
+		level = new Level(),
+		pacman = new Pacman(),
+		controls = new Controls(pacman),
+		blinky = new Ghost(),
+		pathfinder = new Pathfinder(physics);
 
 	document.addEventListener('canvasLoaded', loadGameObjects, false);
 
 	function loadGameObjects() {
-		painter = new Painter(canvas);
-		physics = new Physics();
-		pathfinder = new Pathfinder(physics);
-		pacman = new Pacman();
-		controls = new Controls(pacman);
-		blinky = new Ghost();
-		startGame();
+		printer.printLevel();
+		// printer.printGrid();
+		// printer.printGridNumbers();
+		setupPoints();
+		start();
 	}
 
-	function startGame() {
-		painter.drawLevel();
-		// painter.drawGrid();
-		level = new Level(physics.getWalkableBlocks());
-		painter.drawDots(level.getDots());
-		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection());
-		runner = setInterval(generateFrame, 16);
-		runGhost = setInterval(generateBlinky, 22);
+	function setupPoints() {
+		var pointBlocks = level.getPointBlocks();
+		pointBlocks.forEach(function(pointBlock) {
+			printer.printDot(pointBlock);
+		});
 	}
 
-	var points = 0;
+	function start() {
+		pacmanHandler = setInterval(handlePacman, pacman.getSpeed());
+		blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
+	}
 
-	function generateFrame() {
-		
-		painter.erasePacman(pacman.getX(), pacman.getY());
+	function handlePacman() {
 
-		var requestedDirection = pacman.getRequestedDirection();
+		printer.erasePacman(pacman.getX(), pacman.getY());
+		var currentDirection = pacman.getDirection();
 		var oppositeDirection = physics.getOppositeDirection(pacman.getDirection());
+		var requestedDirection = pacman.getRequestedDirection();
 
-		var wentInOppositeDirection = false;
-
-		// opposite direction requested, always ok??
+		// opposite direction requested, no need to be on new block
 		if (requestedDirection && requestedDirection == oppositeDirection) {
-			pacman.setRequestedDirection(null);
 			pacman.setDirection(oppositeDirection);
-			pacman.move();
-			wentInOppositeDirection  = true;
 		}
 
-		var animate = true;
-		var blockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());
+		var pacX = pacman.getX();
+		var pacY = pacman.getY();
+		var currentBlock = physics.getBlockNumber(pacX, pacY);
 
-		// check if pacman goes into tunnel
-		if (blockNumber[1] == 15) {
-			if (blockNumber[0] == -1) {
-				pacman.setDirection(3);
-				pacman.setX(28 * 33 + 4);
-			} else if (blockNumber[0] == 29) {
-				if (pacman.getDirection() != 3) {
-					pacman.setDirection(4);
-					pacman.setX(-1 * 33 + 4);
+		if (physics.inTunnel(currentBlock)) {
+			if (currentBlock == 393) {
+				if (pacman.getDirection() == LEFT) {
+					pacman.move();
+					printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
+					printer.printExcessTunnels();
+					return;
 				}
+			} else if (currentBlock == 420) {
+				if (pacman.getDirection() == RIGHT) {
+					pacman.move();
+					printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
+					printer.printExcessTunnels();
+					return;
+				}
+			} else if (physics.isNewBlock(pacX, pacY) && currentBlock == 392 && pacman.getDirection() == LEFT) {
+				pacman.setX(28 * 33 + 4);
+			} else if (physics.isNewBlock(pacX, pacY) && currentBlock == 421 && pacman.getDirection() == RIGHT) {
+				pacman.setX(-1 * 33 + 4);
 			}
 		}
 
-		if (!wentInOppositeDirection) {
-			var newBlock = physics.isNewBlock(pacman.getX(), pacman.getY());
-			if (newBlock) {
-				if (pacman.getRequestedDirection() && physics.isValidNewBlockDirection(blockNumber, pacman.getRequestedDirection())) {
-					pacman.setDirection(pacman.getRequestedDirection());
+		var nextCurrentBlock = physics.getNextBlockNumber(currentBlock, currentDirection);
+		if (physics.isNewBlock(pacX, pacY)) {
+			// is requested direction requested and is valid requested direction
+			if (requestedDirection) {
+				var nextRequestedBlock = physics.getNextBlockNumber(currentBlock, requestedDirection);
+				if (physics.isWalkableBlock(nextRequestedBlock)) {
+					pacman.setDirection(requestedDirection);
 					pacman.setRequestedDirection(null);
 					pacman.move();
-				} else if (physics.isValidNewBlockDirection(blockNumber, pacman.getDirection())) {
+				} else if (physics.isWalkableBlock(nextCurrentBlock)) {
 					pacman.move();
 				} else {
-					animate = false;
+					// do not move
 				}
 			} else {
-				pacman.move();
+				if (physics.isWalkableBlock(nextCurrentBlock)) {
+					pacman.move();
+				} 
 			}
+		} else {
+			pacman.move();
 		}
 
-		var activeBlock = physics.getActiveBlockNumber(pacman.getX(), pacman.getY(), pacman.getDirection());
-		if (level.removeDot(activeBlock)) {
-			painter.eraseDot(activeBlock);
+		var invadingBlockNumber = physics.getInvadingBlockNumber(pacX, pacY, pacman.getDirection());
+		if (level.isPoint(invadingBlockNumber)) {
+			printer.eraseDot(invadingBlockNumber);
+			level.removeDot(invadingBlockNumber);
 		}
 
 		if (level.finished()) {
-			alert('points');
+			alert('done');
 		}
-		
-		drawMovingObjects(animate);
 
-	}
-
-	function generateBlinky() {
-		painter.eraseGhost(blinky.getX(), blinky.getY());
-		var newBlock = physics.isNewBlock(blinky.getX(), blinky.getY());
-		var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
-		if (newBlock) {
-			if (physics.isCrossroads(blockNumber)) {
-				var pacmanPosition = physics.getBlockNumber(pacman.getX(), pacman.getY());
-				var pathToPacman = pathfinder.find(blockNumber, pacmanPosition, blinky.getDirection());
-				var directionToPacman = pathfinder.getPathDirection(pathToPacman);
-				blinky.setDirection(directionToPacman);
-				blinky.move();
-			} else if (physics.isValidNewBlockDirection(blockNumber, blinky.getDirection())) {
-				blinky.move();
-			} else {
-				var pacmanPosition = physics.getBlockNumber(pacman.getX(), pacman.getY());
-				var directionToPacman = pathfinder.calculateDirection(blockNumber, pacmanPosition, blinky.getDirection());
-				blinky.setDirection(directionToPacman);
-				blinky.move();
-			}
-		} else {
-			blinky.move();
+		printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
+		if (physics.inTunnel(currentBlock)) {
+			printer.printExcessTunnels();
 		}
-		redrawGhostDots(blockNumber);
-		drawMovingObjects(false);
-	}
-// calculateDirection
-	function redrawGhostDots(blockNumber) {
-		var neighbours = [];
-		neighbours.push({ 'x': blockNumber[0] - 1, 'y': blockNumber[1] });
-		neighbours.push({ 'x': blockNumber[0] + 1, 'y': blockNumber[1] });
-		neighbours.push({ 'x': blockNumber[0], 'y': blockNumber[1] + 1 });
-		neighbours.push({ 'x': blockNumber[0], 'y': blockNumber[1] - 1 });
-		neighbours.forEach(function(neighbour) {
-			if (level.isDot(neighbour)) {
-				painter.drawDot(neighbour);
-			}
-		});		
+
 	}
 
-	function drawMovingObjects(animatePacman) {
-		painter.drawPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), animatePacman);
-		painter.drawBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen());
-		painter.drawTunnels();
+	function handleBlinky() {
+		printer.eraseGhost(blinky.getX(), blinky.getY());
+		if (physics.isNewBlock(blinky.getX(), blinky.getY())) {
+			var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
+			if (physics.onCrossroads(blockNumber)) {
+				var pacmanBlockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());	
+				var newDirection = pathfinder.findDirectionToPacman(blockNumber, pacmanBlockNumber, blinky.getDirection());
+				blinky.setDirection(newDirection);
+			} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, blinky.getDirection()))) {
+				var newDirection = pathfinder.findNewGhostDirection(blockNumber, blinky.getDirection());
+				blinky.setDirection(newDirection);
+			}
+
+			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
+			pointsToRedraw.forEach(function(point) {
+				printer.printDot(point);
+			});
+
+		}
+		blinky.move();
+		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen());
 	}
 
 }
-
-new Game();

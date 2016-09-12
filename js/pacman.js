@@ -1,24 +1,44 @@
 function Pacman() {
 
 	this.getX = getX;
-	this.getY = getY;
 	this.setX = setX;
-	this.setY = setY;
-	this.move = move;
-	this.getDirection = getDirection;
+	this.getY = getY;
+	this.getSpeed = getSpeed;
+	this.setSpeed = setSpeed;
 	this.setDirection = setDirection;
-	this.getRequestedDirection = getRequestedDirection;
+	this.getDirection = getDirection;
 	this.setRequestedDirection = setRequestedDirection;
+	this.getRequestedDirection = getRequestedDirection;
+	this.move = move;
+	this.getAnimationState = getAnimationState;
 
-	var direction = 4,
-		requestedDirection = 4,
-		UP = 1,
-		DOWN = 2,
-		LEFT = 3,
-		RIGHT = 4,
-		x = 34,
-		y = 34;
+	var x = 13 * 33 + 19,
+		y = 23 * 33 + 1,
+		speed = 16,
+		requestedDirection = LEFT,
+		direction = LEFT,
+		animationState = 1;
 
+	function getX() {
+		return x;
+	}
+
+	function setX(newX) {
+		x = newX;
+	}
+
+	function getY() {
+		return y;
+	}
+
+	function setSpeed(newSpeed) {
+		speed = newSpeed;
+	}
+
+	function getSpeed() {
+		return speed;
+	}
+	
 	function getDirection() {
 		return direction;
 	}
@@ -27,38 +47,40 @@ function Pacman() {
 		direction = newDirection;
 	}
 
-	function getRequestedDirection() {
-		return requestedDirection;
-	}
-
 	function setRequestedDirection(newRequestedDirection) {
 		requestedDirection = newRequestedDirection;
 	}
 
-	function getX() {
-		return x;
+	function getRequestedDirection() {
+		return requestedDirection;
 	}
 
-	function getY() {
-		return y;
-	}
-	
-	function setX(newX) {
-		x = newX;
+	var animationCounter = 0;
+	function setAnimationState() {
+		animationCounter++;
+		if (animationCounter == 4) {
+			animationCounter = 0;
+			if (animationState == 4) {
+				animationState = 1;
+			} else {
+				animationState++;
+			}
+		}
 	}
 
-	function setY(newY) {
-		y = newY;
+	function getAnimationState()  {
+		return animationState;
 	}
 
 	function move() {
+		setAnimationState();
 		if (direction == UP) {
 			y -= 3;
 		} else if (direction == DOWN) {
 			y += 3;
 		} else if (direction == LEFT) {
 			x -= 3;
-		} else if (direction == RIGHT) {
+		} else if (direction == RIGHT) { 
 			x += 3;
 		}
 	}

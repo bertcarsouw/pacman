@@ -1,30 +1,38 @@
 function Ghost() {
 
 	this.getX = getX;
+	this.setX = setX;
 	this.getY = getY;
+	this.setY = setY;
 	this.getDirection = getDirection;
 	this.setDirection = setDirection;
-	this.move = move;
+	this.getSpeed = getSpeed;
+	this.setSpeed = setSpeed;
 	this.isOpen = isOpen;
-	
-	var x = 33 * 26 + 1,
-		y = 33 * 29 + 1;
+	this.move = move;
 
-	var	UP = 1,
-		DOWN = 2,
-		LEFT = 3,
-		RIGHT = 4;
-
-	var animationCounter = 0;
-
-	var direction = LEFT;
+	var x = 13 * 33 + 19,
+		y = 11 * 33 + 1, 
+		direction = LEFT,
+		open = false,
+		openCounter = 0,
+		openSpeed = 10,
+		speed = 20;
 
 	function getX() {
 		return x;
 	}
 
+	function setX(newX) {
+		x = newX;
+	}
+
 	function getY() {
 		return y;
+	}
+
+	function setY(newY) {
+		y = newY;
 	}
 
 	function getDirection() {
@@ -35,7 +43,25 @@ function Ghost() {
 		direction = newDirection;
 	}
 
+	function getSpeed() {
+		return speed;
+	}
+
+	function setSpeed(newSpeed) {
+		speed = newSpeed;
+	}
+
+	function isOpen() {
+		return open;
+	}
+
 	function move() {
+		if (openCounter == openSpeed) {
+			openCounter = 0;
+			open = !open;
+		} else {
+			openCounter++;
+		}
 		if (direction == UP) {
 			y -= 3;
 		} else if (direction == DOWN) {
@@ -44,18 +70,6 @@ function Ghost() {
 			x -= 3;
 		} else if (direction == RIGHT) {
 			x += 3;
-		}
-		animationCounter++;
-		if (animationCounter == 9) {
-			animationCounter = 0;
-		}
-	}
-
-	function isOpen() {
-		if (animationCounter < 5)  {
-			return true;
-		} else {
-			return false;
 		}
 	}
 

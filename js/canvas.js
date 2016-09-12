@@ -7,7 +7,7 @@ function Canvas() {
 
 	this.getContext = getContext;
 	this.getLevelImage = getLevelImage;
-	this.getCommonSprite = getCommonSprite;
+	this.getSprite = getSprite;
 
 	setup();
 
@@ -19,7 +19,7 @@ function Canvas() {
 		return levelImage;
 	}
 
-	function getCommonSprite() {
+	function getSprite() {
 		return commonSprite;
 	}
 

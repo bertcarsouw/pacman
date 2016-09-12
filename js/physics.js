@@ -1,474 +1,112 @@
 function Physics() {
-
+	
+	this.isNewBlock = isNewBlock;
 	this.getBlockNumber = getBlockNumber;
-	this.getActiveBlockNumber = getActiveBlockNumber;
+	this.getNextBlockNumber = getNextBlockNumber;
 	this.isWalkableBlock = isWalkableBlock;
 	this.getOppositeDirection = getOppositeDirection;
-	this.isValidNewBlockDirection = isValidNewBlockDirection;
-	this.isNewBlock = isNewBlock;
-	this.getWalkableBlocks = getWalkableBlocks;
-	this.isCrossroads = isCrossroads;
+	this.inTunnel = inTunnel;
+	this.getInvadingBlockNumber = getInvadingBlockNumber;
+	this.onCrossroads = onCrossroads;
 
-	var UP = 1,
-		DOWN = 2,
-		LEFT = 3,
-		RIGHT = 4;
+	var walkableBlocks = [
+		30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
+		58, 63, 69, 72, 78, 83,
+		86, 91, 97, 100, 106, 111, 
+		114, 119, 125, 128, 134, 139, 
+		142, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 
+		170, 175, 178, 187, 190, 195,
+		198, 203, 206, 215, 218, 223,
+		226, 227, 228, 229, 230, 231, 234, 235, 236, 237, 240, 241, 242, 243, 246, 247, 248, 249, 250, 251,
+		259, 265, 268, 274,
+		287, 293, 296, 302,
+		315, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 330,
+		343, 346, 355, 358, 
+		371, 374, 383, 386, 
+		393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420,
+		427, 430, 439, 442,
+		455, 458, 467, 470,
+		483, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 498,
+		511, 514, 523, 526, 
+		539, 542, 551, 554,
+		562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587,
+		590, 595, 601, 604, 610, 615, 
+		618, 623, 629, 632, 638, 643, 
+		646, 647, 648, 651, 652, 653, 654, 655, 656, 657, 658, 659, 660, 661, 662, 663, 664, 665, 666, 669, 670, 671,
+		676, 679, 682, 691, 694, 697,
+		704, 707, 710, 719, 722, 725, 
+		730, 731, 732, 733, 734, 735, 738, 739, 740, 741, 744, 745, 746, 747, 750, 751, 752, 753, 754, 755,
+		758, 769, 772, 783, 
+		786, 797, 800, 811, 
+		814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839
+	];
 
-	function getBlockNumber(x, y) {
-		var number = [];
-		number.push(Math.floor(x / 33) + 1);
-		number.push(Math.floor(y / 33) + 1);
-		return number;
-	}
+	var crossroads = [
+		35, 50, 142, 147, 150, 153, 156, 159, 162, 167, 231, 246, 321, 324, 399, 402, 411, 414, 486, 495, 
+		567, 570, 579, 582, 651, 654, 657, 660, 663, 666, 732, 753, 825, 828
+	];
 
-	function isCrossroads(blockNumber) {
-		for (var counter = 0; counter < crossroads.length; counter++) {
-			if (crossroads[counter].x == blockNumber[0] && crossroads[counter].y == blockNumber[1]) {
-				return true;
-			}	
-		}
-		return false;
-	}
-
-	function getActiveBlockNumber(x, y, direction) {
-		var activeBlockNumber = [];
-		var activeX = null;
-		var activeY = null;
-		if (direction == UP) {
-			activeY = Math.floor((y - 1) / 33);
-			activeX = Math.floor((x - 1) / 33);
-		} else if (direction == DOWN) {
-			activeY = Math.ceil((y - 1) / 33);
-			activeX = Math.floor((x - 1) / 33);
-		} else if (direction == LEFT) {
-			activeX = Math.floor((x - 1) / 33);
-			activeY = Math.floor((y - 1) / 33);
-		} else if (direction == RIGHT) {
-			activeX = Math.ceil((x - 1) / 33);
-			activeY = Math.floor((y - 1) / 33);
-		}
-		activeBlockNumber.push(activeX + 1);
-		activeBlockNumber.push(activeY + 1);
-		return activeBlockNumber;			
-	}
-
+	/*
+	 *	returns true is position is a left upper corner
+	 * 	of a new grid block
+	 */
 	function isNewBlock(x, y) {
 		return (x - 1) % 33 == 0 && (y - 1) % 33 == 0;
 	}
 
-	function getWalkableBlocks() {
-		return walkableBlocks;
+	function inTunnel(blockNumber) {
+		return [392, 393, 394, 395, 396, 397, 398, 415, 416, 417, 418, 419, 420, 421].indexOf(blockNumber) != -1;
 	}
 
-	function isValidNewBlockDirection(currentBlockNumber, direction) {
-		var blockNumber = [];
-		blockNumber.push(currentBlockNumber[0]); 
-		blockNumber.push(currentBlockNumber[1]); 
-		if (direction == UP) {
-			blockNumber[1] -= 1;
-		} else if (direction == DOWN) {
-			blockNumber[1] += 1;
-		} else if (direction == LEFT) {
-			blockNumber[0] -= 1;
-		} else if (direction == RIGHT) {
-			blockNumber[0] += 1;
-		}
-		return isWalkableBlock(blockNumber);
-	}
-
-	function isWalkableBlock(block) {
-		var blockX = block[0];
-		var blockY = block[1];
-		for (var counter = 0; counter < walkableBlocks.length; counter++) {
-			if (blockX == walkableBlocks[counter].x && blockY == walkableBlocks[counter].y) {
-				return true;
-			}
-		}
-		return false;
+	function onCrossroads(blockNumber) {
+		return crossroads.indexOf(blockNumber) != -1;
 	}
 
 	function getOppositeDirection(direction) {
-		if (direction == RIGHT) {
-			return LEFT;
-		} else if (direction == LEFT) {
-			return RIGHT;
-		} else if (direction == UP) {
+		if (direction == UP) {
 			return DOWN;
 		} else if (direction == DOWN) {
 			return UP;
+		} else if (direction == LEFT) {
+			return RIGHT;
+		} else if (direction == RIGHT) {
+			return LEFT;
 		}
 	}
 
-	var crossroads = [
-		{ 'x':  7, 'y': 2 },
-		{ 'x': 22, 'y': 2 },
-		{ 'x':  2, 'y': 6 },
-		{ 'x':  7, 'y': 6 },
-		{ 'x': 10, 'y': 6 },
-		{ 'x': 13, 'y': 6 },
-		{ 'x': 16, 'y': 6 },
-		{ 'x': 19, 'y': 6 },
-		{ 'x': 22, 'y': 6 },
-		{ 'x': 27, 'y': 6 },
-		{ 'x':  7, 'y': 9 },
-		{ 'x': 22, 'y': 9 },
-		{ 'x': 13, 'y': 12 },
-		{ 'x': 16, 'y': 12 },
-		{ 'x':  7, 'y': 15 },
-		{ 'x': 10, 'y': 15 },
-		{ 'x': 19, 'y': 15 },
-		{ 'x': 22, 'y': 15 },
-		{ 'x': 10, 'y': 18 },
-		{ 'x': 19, 'y': 18 },
-		{ 'x':  7, 'y': 21 },
-		{ 'x': 10, 'y': 21 },
-		{ 'x': 19, 'y': 21 },
-		{ 'x': 22, 'y': 21 },
-		{ 'x':  7, 'y': 24 },
-		{ 'x': 10, 'y': 24 },
-		{ 'x': 13, 'y': 24 },
-		{ 'x': 16, 'y': 24 },
-		{ 'x': 19, 'y': 24 },
-		{ 'x': 22, 'y': 24 },
-		{ 'x':  4, 'y': 27 },
-		{ 'x': 25, 'y': 27 },
-		{ 'x': 13, 'y': 30 },
-		{ 'x': 16, 'y': 30 }
-	]
+	function getBlockNumber(x, y) {
+		var horizontalNumber = Math.floor(x / 33) + 1;
+		var verticalNumber = Math.floor(y / 33) + 1;
+		var result = (verticalNumber - 1) * 28;
+		return result + horizontalNumber;			
+	}
 
-	var walkableBlocks = [
-		// 1st row
-		{ 'x': 2,  'y': 2 },
-		{ 'x': 3,  'y': 2 },
-		{ 'x': 4,  'y': 2 },
-		{ 'x': 5,  'y': 2 },
-		{ 'x': 6,  'y': 2 },
-		{ 'x': 7,  'y': 2 },
-		{ 'x': 8,  'y': 2 },
-		{ 'x': 9,  'y': 2 },
-		{ 'x': 10, 'y': 2 },
-		{ 'x': 11, 'y': 2 },
-		{ 'x': 12, 'y': 2 },
-		{ 'x': 13, 'y': 2 },
-		{ 'x': 16, 'y': 2 },
-		{ 'x': 17, 'y': 2 },
-		{ 'x': 18, 'y': 2 },
-		{ 'x': 19, 'y': 2 },
-		{ 'x': 20, 'y': 2 },
-		{ 'x': 21, 'y': 2 },
-		{ 'x': 22, 'y': 2 },
-		{ 'x': 23, 'y': 2 },
-		{ 'x': 24, 'y': 2 },
-		{ 'x': 25, 'y': 2 },
-		{ 'x': 26, 'y': 2 },
-		{ 'x': 27, 'y': 2 },
-		// 2nd row
-		{ 'x': 2,  'y': 3 },
-		{ 'x': 7,  'y': 3 },
-		{ 'x': 13, 'y': 3 },
-		{ 'x': 16, 'y': 3 },
-		{ 'x': 22, 'y': 3 },
-		{ 'x': 27, 'y': 3 },
-		// 3th row
-		{ 'x': 2,  'y': 4 },
-		{ 'x': 7,  'y': 4 },
-		{ 'x': 13, 'y': 4 },
-		{ 'x': 16, 'y': 4 },
-		{ 'x': 22, 'y': 4 },
-		{ 'x': 27, 'y': 4 },
-		// 4th row
-		{ 'x': 2,  'y': 5 },
-		{ 'x': 7,  'y': 5 },
-		{ 'x': 13, 'y': 5 },
-		{ 'x': 16, 'y': 5 },
-		{ 'x': 22, 'y': 5 },
-		{ 'x': 27, 'y': 5 },
-		// 5th
-		{ 'x': 2,  'y': 6 }, 
-		{ 'x': 3,  'y': 6 }, 
-		{ 'x': 4,  'y': 6 }, 
-		{ 'x': 5,  'y': 6 }, 
-		{ 'x': 6,  'y': 6 }, 
-		{ 'x': 7,  'y': 6 }, 
-		{ 'x': 8,  'y': 6 }, 
-		{ 'x': 9,  'y': 6 }, 
-		{ 'x': 10, 'y': 6 }, 
-		{ 'x': 11, 'y': 6 }, 
-		{ 'x': 12, 'y': 6 }, 
-		{ 'x': 13, 'y': 6 }, 
-		{ 'x': 14, 'y': 6 }, 
-		{ 'x': 15, 'y': 6 }, 
-		{ 'x': 16, 'y': 6 }, 
-		{ 'x': 17, 'y': 6 },
-		{ 'x': 18, 'y': 6 }, 
-		{ 'x': 19, 'y': 6 }, 
-		{ 'x': 20, 'y': 6 }, 
-		{ 'x': 21, 'y': 6 }, 
-		{ 'x': 22, 'y': 6 }, 
-		{ 'x': 23, 'y': 6 }, 
-		{ 'x': 24, 'y': 6 }, 
-		{ 'x': 25, 'y': 6 }, 
-		{ 'x': 26, 'y': 6 }, 
-		{ 'x': 27, 'y': 6 }, 
-		// 6th row
-		{ 'x': 2,  'y': 7 },
-		{ 'x': 7,  'y': 7 },
-		{ 'x': 10, 'y': 7 },
-		{ 'x': 19, 'y': 7 },
-		{ 'x': 22, 'y': 7 },
-		{ 'x': 27, 'y': 7 },
-		// 7th row
-		{ 'x': 2,  'y': 8 },
-		{ 'x': 7,  'y': 8 },
-		{ 'x': 10, 'y': 8 },
-		{ 'x': 19, 'y': 8 },
-		{ 'x': 22, 'y': 8 },
-		{ 'x': 27, 'y': 8 },
-		//  8th row
-		{ 'x': 2,  'y': 9 },
-		{ 'x': 3,  'y': 9 },
-		{ 'x': 4,  'y': 9 },
-		{ 'x': 5,  'y': 9 },
-		{ 'x': 6,  'y': 9 },
-		{ 'x': 7,  'y': 9 },
-		{ 'x': 10, 'y': 9 },
-		{ 'x': 11, 'y': 9 },
-		{ 'x': 12, 'y': 9 },
-		{ 'x': 13, 'y': 9 },
-		{ 'x': 16, 'y': 9 },
-		{ 'x': 17, 'y': 9 },
-		{ 'x': 18, 'y': 9 },
-		{ 'x': 19, 'y': 9 },
-		{ 'x': 22, 'y': 9 },
-		{ 'x': 23, 'y': 9 },
-		{ 'x': 24, 'y': 9 },
-		{ 'x': 25, 'y': 9 },
-		{ 'x': 26, 'y': 9 },
-		{ 'x': 27, 'y': 9 },
-		// 9th row
-		{ 'x': 7,  'y': 10 },
-		{ 'x': 13, 'y': 10 },
-		{ 'x': 16, 'y': 10 },
-		{ 'x': 22, 'y': 10 },
-		// 10th row
-		{ 'x': 7,  'y': 11 },
-		{ 'x': 13, 'y': 11 },
-		{ 'x': 16, 'y': 11 },
-		{ 'x': 22, 'y': 11 },
-		// 11th row
-		{ 'x': 7,  'y': 12 },
-		{ 'x': 10, 'y': 12 },
-		{ 'x': 11, 'y': 12 },
-		{ 'x': 12, 'y': 12 },
-		{ 'x': 13, 'y': 12 },
-		{ 'x': 14, 'y': 12 },
-		{ 'x': 15, 'y': 12 },
-		{ 'x': 16, 'y': 12 },
-		{ 'x': 17, 'y': 12 },
-		{ 'x': 18, 'y': 12 },
-		{ 'x': 19, 'y': 12 },
-		{ 'x': 22, 'y': 12 },
-		// 12th row
-		{ 'x':  7, 'y': 13 },
-		{ 'x': 10, 'y': 13 },
-		{ 'x': 19, 'y': 13 },
-		{ 'x': 22, 'y': 13 },
-		// 13th row
-		{ 'x':  7, 'y': 14 },
-		{ 'x': 10, 'y': 14 },
-		{ 'x': 19, 'y': 14 },
-		{ 'x': 22, 'y': 14 },
-		// 14th row
-		{ 'x': -1, 'y': 15 },
-		{ 'x':  0, 'y': 15 },
-		{ 'x':  1, 'y': 15 },
-		{ 'x':  2, 'y': 15 },
-		{ 'x':  3, 'y': 15 },
-		{ 'x':  4, 'y': 15 },
-		{ 'x':  5, 'y': 15 },
-		{ 'x':  6, 'y': 15 },
-		{ 'x':  7, 'y': 15 },
-		{ 'x':  8, 'y': 15 },
-		{ 'x':  9, 'y': 15 },
-		{ 'x': 10, 'y': 15 },
-		{ 'x': 19, 'y': 15 },
-		{ 'x': 20, 'y': 15 },
-		{ 'x': 21, 'y': 15 },
-		{ 'x': 22, 'y': 15 },
-		{ 'x': 23, 'y': 15 },
-		{ 'x': 24, 'y': 15 },
-		{ 'x': 25, 'y': 15 },
-		{ 'x': 26, 'y': 15 },
-		{ 'x': 27, 'y': 15 },
-		{ 'x': 28, 'y': 15 },
-		{ 'x': 29, 'y': 15 },
-		// 15th row
-		{ 'x':  7, 'y': 16 },
-		{ 'x': 10, 'y': 16 },
-		{ 'x': 19, 'y': 16 },
-		{ 'x': 22, 'y': 16 },
-		// 16th row
-		{ 'x':  7, 'y': 17 },
-		{ 'x': 10, 'y': 17 },
-		{ 'x': 19, 'y': 17 },
-		{ 'x': 22, 'y': 17 },
-		// 17th row
-		{ 'x':  7, 'y': 18 },
-		{ 'x': 10, 'y': 18 },
-		{ 'x': 11, 'y': 18 },
-		{ 'x': 12, 'y': 18 },
-		{ 'x': 13, 'y': 18 },
-		{ 'x': 14, 'y': 18 },
-		{ 'x': 15, 'y': 18 },
-		{ 'x': 16, 'y': 18 },
-		{ 'x': 17, 'y': 18 },
-		{ 'x': 18, 'y': 18 },
-		{ 'x': 19, 'y': 18 },
-		{ 'x': 22, 'y': 18 },
-		// 18th row
-		{ 'x':  7, 'y': 19 },
-		{ 'x': 10, 'y': 19 },
-		{ 'x': 19, 'y': 19 },
-		{ 'x': 22, 'y': 19 },
-		// 19th row
-		{ 'x':  7, 'y': 20 },
-		{ 'x': 10, 'y': 20 },
-		{ 'x': 19, 'y': 20 },
-		{ 'x': 22, 'y': 20 },
-		// 20th row
-		{ 'x':  2, 'y': 21 },
-		{ 'x':  3, 'y': 21 },
-		{ 'x':  4, 'y': 21 },
-		{ 'x':  5, 'y': 21 },
-		{ 'x':  6, 'y': 21 },
-		{ 'x':  7, 'y': 21 },
-		{ 'x':  8, 'y': 21 },
-		{ 'x':  9, 'y': 21 },
-		{ 'x': 10, 'y': 21 },
-		{ 'x': 11, 'y': 21 },
-		{ 'x': 12, 'y': 21 },
-		{ 'x': 13, 'y': 21 },
-		{ 'x': 16, 'y': 21 },
-		{ 'x': 17, 'y': 21 },
-		{ 'x': 18, 'y': 21 },
-		{ 'x': 19, 'y': 21 },
-		{ 'x': 20, 'y': 21 },
-		{ 'x': 21, 'y': 21 },
-		{ 'x': 22, 'y': 21 },
-		{ 'x': 23, 'y': 21 },
-		{ 'x': 24, 'y': 21 },
-		{ 'x': 25, 'y': 21 },
-		{ 'x': 26, 'y': 21 },
-		{ 'x': 27, 'y': 21 },
-		// 21th row
-		{ 'x': 2,  'y': 22 },
-		{ 'x': 7,  'y': 22 },
-		{ 'x': 13, 'y': 22 },
-		{ 'x': 16, 'y': 22 },
-		{ 'x': 22, 'y': 22 },
-		{ 'x': 27, 'y': 22 },
-		// 22th row
-		{ 'x': 2,  'y': 23 },
-		{ 'x': 7,  'y': 23 },
-		{ 'x': 13, 'y': 23 },
-		{ 'x': 16, 'y': 23 },
-		{ 'x': 22, 'y': 23 },
-		{ 'x': 27, 'y': 23 },
-		// 23th row
-		{ 'x':  2, 'y': 24 },
-		{ 'x':  3, 'y': 24 },
-		{ 'x':  4, 'y': 24 },
-		{ 'x':  7, 'y': 24 },
-		{ 'x':  8, 'y': 24 },
-		{ 'x':  9, 'y': 24 },
-		{ 'x': 10, 'y': 24 },
-		{ 'x': 11, 'y': 24 },
-		{ 'x': 12, 'y': 24 },
-		{ 'x': 13, 'y': 24 },
-		{ 'x': 14, 'y': 24 },
-		{ 'x': 15, 'y': 24 },
-		{ 'x': 16, 'y': 24 },
-		{ 'x': 17, 'y': 24 },
-		{ 'x': 18, 'y': 24 },
-		{ 'x': 19, 'y': 24 },
-		{ 'x': 20, 'y': 24 },
-		{ 'x': 21, 'y': 24 },
-		{ 'x': 22, 'y': 24 },
-		{ 'x': 25, 'y': 24 },
-		{ 'x': 26, 'y': 24 },
-		{ 'x': 27, 'y': 24 },
-		// 24th row
-		{ 'x': 4,  'y': 25 },
-		{ 'x': 7,  'y': 25 },
-		{ 'x': 10, 'y': 25 },
-		{ 'x': 19, 'y': 25 },
-		{ 'x': 22, 'y': 25 },
-		{ 'x': 25, 'y': 25 },
-		// 25th row
-		{ 'x': 4,  'y': 26 },
-		{ 'x': 7,  'y': 26 },
-		{ 'x': 10, 'y': 26 },
-		{ 'x': 19, 'y': 26 },
-		{ 'x': 22, 'y': 26 },
-		{ 'x': 25, 'y': 26 },
-		// 26th row
-		{ 'x':  2, 'y': 27 },
-		{ 'x':  3, 'y': 27 },
-		{ 'x':  4, 'y': 27 },
-		{ 'x':  5, 'y': 27 },
-		{ 'x':  6, 'y': 27 },
-		{ 'x':  7, 'y': 27 },
-		{ 'x': 10, 'y': 27 },
-		{ 'x': 11, 'y': 27 },
-		{ 'x': 12, 'y': 27 },
-		{ 'x': 13, 'y': 27 },
-		{ 'x': 16, 'y': 27 },
-		{ 'x': 17, 'y': 27 },
-		{ 'x': 18, 'y': 27 },
-		{ 'x': 19, 'y': 27 },
-		{ 'x': 22, 'y': 27 },
-		{ 'x': 23, 'y': 27 },
-		{ 'x': 24, 'y': 27 },
-		{ 'x': 25, 'y': 27 },
-		{ 'x': 26, 'y': 27 },
-		{ 'x': 27, 'y': 27 },
-		// 27th row
-		{ 'x':  2, 'y': 28 },
-		{ 'x': 13, 'y': 28 },
-		{ 'x': 16, 'y': 28 },
-		{ 'x': 27, 'y': 28 },
-		// 28th row
-		{ 'x':  2, 'y': 29 },
-		{ 'x': 13, 'y': 29 },
-		{ 'x': 16, 'y': 29 },
-		{ 'x': 27, 'y': 29 },
-		// 29th row
-		{ 'x':  2, 'y': 30 },
-		{ 'x':  3, 'y': 30 },
-		{ 'x':  4, 'y': 30 },
-		{ 'x':  5, 'y': 30 },
-		{ 'x':  6, 'y': 30 },
-		{ 'x':  7, 'y': 30 },
-		{ 'x':  8, 'y': 30 },
-		{ 'x':  9, 'y': 30 },
-		{ 'x': 10, 'y': 30 },
-		{ 'x': 11, 'y': 30 },
-		{ 'x': 12, 'y': 30 },
-		{ 'x': 13, 'y': 30 },
-		{ 'x': 14, 'y': 30 },
-		{ 'x': 15, 'y': 30 },
-		{ 'x': 16, 'y': 30 },
-		{ 'x': 17, 'y': 30 },
-		{ 'x': 18, 'y': 30 },
-		{ 'x': 19, 'y': 30 },
-		{ 'x': 20, 'y': 30 },
-		{ 'x': 21, 'y': 30 },
-		{ 'x': 22, 'y': 30 },
-		{ 'x': 23, 'y': 30 },
-		{ 'x': 24, 'y': 30 },
-		{ 'x': 25, 'y': 30 },
-		{ 'x': 26, 'y': 30 },
-		{ 'x': 27, 'y': 30 }
-	]
+	function getInvadingBlockNumber(x, y, direction) {
+		var horizontalNumber = Math.floor(x / 33) + 1;
+		var verticalNumber = Math.floor(y / 33) + 1;
+		if (direction == RIGHT) {
+			horizontalNumber += 1;
+		} else if (direction == DOWN) {
+			verticalNumber += 1;
+		}
+		var result = (verticalNumber - 1) * 28;
+		return result + horizontalNumber;
+	}
+
+	function getNextBlockNumber(currentBlockNumber, direction) {
+		if (direction == UP) {
+			return currentBlockNumber - 28;
+		} else if (direction == DOWN) {
+			return currentBlockNumber + 28;
+		} else if (direction == RIGHT) {
+			return currentBlockNumber + 1;
+		} else if (direction == LEFT) {
+			return currentBlockNumber - 1;
+		}
+	}
+
+	function isWalkableBlock(blockNumber) {
+		return walkableBlocks.indexOf(blockNumber) != -1;
+	}
 
 }

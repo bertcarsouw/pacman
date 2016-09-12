@@ -1,10 +1,5 @@
 function Controls(pacman) {
 
-	var UP = 1,
-		DOWN = 2,
-		LEFT = 3,
-		RIGHT = 4;
-
 	window.addEventListener('keydown', handleKey);
 
 	function handleKey(event) {
@@ -57,5 +52,6 @@ function Controls(pacman) {
 	    xDown = null;
 	    yDown = null;                                             
 	};
+
 
 }
