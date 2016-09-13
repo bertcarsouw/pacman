@@ -28,9 +28,9 @@ function Game() {
 		pacmanHandler = setInterval(handlePacman, pacman.getSpeed());
 		blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
 		blinky.setScatterTimer();
-		// pinky.setX(6 * 33 + 1);
-		// pinky.setY(10 * 33 + 1);
-		// pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
+		pinky.setX(6 * 33 + 1);
+		pinky.setY(10 * 33 + 1);
+		pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
 	}
 
 	function setupPoints() {
@@ -118,6 +118,14 @@ function Game() {
 		printer.eraseGhost(blinky.getX(), blinky.getY());
 		var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
 
+		if (blinky.inScatterMode()) {
+			var blinkyScatterDirection = pathfinder.findDirectionToBlock(blockNumber, 55);
+			blinky.setDirection(blinkyScatterDirection);
+			blinky.move();
+			printPacmanAndGhosts();
+			return;
+		}
+
 		if (physics.inTunnel(blockNumber)) {
 			if (blinky.getSpeed() !== GHOST_TUNNEL_SPEED) {
 				blinky.setTunnelSpeed(true);
@@ -127,14 +135,10 @@ function Game() {
 			if (blockNumber == 393) {
 				if (blinky.getDirection() == LEFT) {
 					blinky.move();
-					printPacmanAndGhosts();
-					return;
 				}
 			} else if (blockNumber == 420) {
 				if (blinky.getDirection() == RIGHT) {
 					blinky.move();
-					printPacmanAndGhosts();
-					return;
 				}
 			} else if (physics.isNewBlock(blinky.getX(), blinky.getY()) && blockNumber == 392 && blinky.getDirection() == LEFT) {
 				blinky.setX(28 * 33 + 4);
@@ -174,7 +178,7 @@ function Game() {
 
 		printer.eraseGhost(pinky.getX(), pinky.getY());
 		var blockNumber = physics.getBlockNumber(pinky.getX(), pinky.getY());
-		
+
 		if (physics.inTunnel(blockNumber)) {
 			if (pinky.getSpeed() !== GHOST_TUNNEL_SPEED) {
 				pinky.setTunnelSpeed(true);
@@ -184,14 +188,10 @@ function Game() {
 			if (blockNumber == 393) {
 				if (pinky.getDirection() == LEFT) {
 					pinky.move();
-					printPacmanAndGhosts();
-					return;
 				}
 			} else if (blockNumber == 420) {
 				if (pinky.getDirection() == RIGHT) {
 					pinky.move();
-					printPacmanAndGhosts();
-					return;
 				}
 			} else if (physics.isNewBlock(pinky.getX(), pinky.getY()) && blockNumber == 392 && pinky.getDirection() == LEFT) {
 				pinky.setX(28 * 33 + 4);
@@ -229,8 +229,8 @@ function Game() {
 
 	function printPacmanAndGhosts() {
 		printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
-		printer.printPinky(pinky.getX(), pinky.getY(), pinky.getDirection(), pinky.isOpen());
-		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen());
+		printer.printPinky(pinky.getX(), pinky.getY(), pinky.getDirection(), pinky.isOpen(), pinky.inScatterMode());
+		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen(), blinky.inScatterMode());
 		printer.printExcessTunnels();
 	}
 

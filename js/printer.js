@@ -132,12 +132,29 @@ function Printer(canvas) {
 		context.clearRect(horizontal * 33 + 12.5, vertical * 33 + 12.5, 10, 10);
 	}
 
-	function printBlinky(x, y, direction, open) {
-		var blinkyImage = getBlinkyImage(direction, open);
+	function printBlinky(x, y, direction, open, scatterMode) {
+		if (scatterMode) {
+			printScatterGhost(x, y, open);
+		} else {
+	 		var blinkyImage = getBlinkyImage(direction, open);
+			context.drawImage(
+				sprite, 
+				blinkyImage[0], 
+				blinkyImage[1], 
+				56, 56, 
+				x - 13.5, 
+				y - 13.5, 
+				56, 56
+			);
+		}
+	}
+
+	function printScatterGhost(x, y, open) {
+		var scatterImage = getScatterGhostImage(open);
 		context.drawImage(
 			sprite, 
-			blinkyImage[0], 
-			blinkyImage[1], 
+			scatterImage[0], 
+			scatterImage[1], 
 			56, 56, 
 			x - 13.5, 
 			y - 13.5, 
@@ -145,17 +162,21 @@ function Printer(canvas) {
 		);
 	}
 
-	function printPinky(x, y, direction, open) {
-		var pinkyImage = getPinkyImage(direction, open);
-		context.drawImage(
-			sprite, 
-			pinkyImage[0], 
-			pinkyImage[1], 
-			56, 56, 
-			x - 13.5, 
-			y - 13.5, 
-			56, 56
-		);
+	function printPinky(x, y, direction, open, scatterMode) {
+		if (scatterMode) {
+			printScatterGhost(x, y, open);
+		} else {
+	 		var pinkyImage = getPinkyImage(direction, open);
+			context.drawImage(
+				sprite, 
+				pinkyImage[0], 
+				pinkyImage[1], 
+				56, 56, 
+				x - 13.5, 
+				y - 13.5, 
+				56, 56
+			);
+		}
 	}
 
 	function getPinkyImage(direction, open) {
@@ -209,6 +230,14 @@ function Printer(canvas) {
 				return [964, 388];
 			}
 			return [964, 452];
+		}
+	}
+
+	function getScatterGhostImage(open) {
+		if (open) {
+			return [196, 132];
+		} else {
+			return [196, 196];
 		}
 	}
 
