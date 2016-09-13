@@ -119,8 +119,25 @@ function Game() {
 		var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
 
 		if (blinky.inScatterMode()) {
-			var blinkyScatterDirection = pathfinder.findDirectionToBlock(blockNumber, 55);
-			blinky.setDirection(blinkyScatterDirection);
+			if (physics.isNewBlock(blinky.getX(), blinky.getY())) {
+				if (blinky.getFirstScatterMove()) {
+					var blinkyScatterDirection = pathfinder.findDirectionToBlock(blockNumber, 55);
+					blinky.setDirection(blinkyScatterDirection);
+					blinky.setFirstScatterMove(false);
+				} else {
+					if (physics.onCrossroads(blockNumber)) {
+						var newDirection = pathfinder.findDirectionToBlock(blockNumber, 55, blinky.getDirection());
+						blinky.setDirection(newDirection);
+					} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, blinky.getDirection()))) {
+						var newDirection = pathfinder.findNewGhostDirection(blockNumber, blinky.getDirection());
+						blinky.setDirection(newDirection);
+					}
+				} 
+			}
+			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
+			pointsToRedraw.forEach(function(point) {
+				printer.printDot(point);
+			});
 			blinky.move();
 			printPacmanAndGhosts();
 			return;

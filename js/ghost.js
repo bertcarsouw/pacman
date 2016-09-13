@@ -13,6 +13,8 @@ function Ghost() {
 	this.setTunnelSpeed = setTunnelSpeed;
 	this.setScatterTimer = setScatterTimer;
 	this.inScatterMode = inScatterMode;
+	this.setFirstScatterMove = setFirstScatterMove;
+	this.getFirstScatterMove = getFirstScatterMove;
 
 	var x = 13 * 33 + 19,
 		y = 11 * 33 + 1, 
@@ -23,7 +25,8 @@ function Ghost() {
 		speed = 20,
 		beforeTunnelSpeed = 0,
 		scatterMode,
-		scatterTimer = null;
+		scatterTimer = null,
+		firstScatterMove = true;
 
 	function getX() {
 		return x;
@@ -65,6 +68,14 @@ function Ghost() {
 		return open;
 	}
 
+	function setFirstScatterMove(newFirstScatterMove) {
+		firstScatterMove = newFirstScatterMove;
+	}
+
+	function getFirstScatterMove() {
+		return firstScatterMove;
+	}
+
 	function setTunnelSpeed(on) {
 		if (on) {
 		 	beforeTunnelSpeed = speed;
@@ -101,6 +112,7 @@ function Ghost() {
 	function cancelScatterTimer() {
 		scatterMode = false;
 		clearInterval(scatterTimer);
+		firstScatterMove = true;
 	}
 
 }
