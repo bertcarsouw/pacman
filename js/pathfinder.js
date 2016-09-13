@@ -1,9 +1,10 @@
 function Pathfinder(physics) {
 
-	this.findDirectionToPacman = findDirectionToPacman;
+	this.findDirectionToBlock = findDirectionToBlock;
 	this.findNewGhostDirection = findNewGhostDirection;
+	this.findFourBlocksInDirection = findFourBlocksInDirection;
 
-	function findDirectionToPacman(startBlock, endBlock, direction) {
+	function findDirectionToBlock(startBlock, endBlock, direction) {
 		var neighbours = getAvailableNeighbours(startBlock, direction);
 		var fastestNeighbour = calculateFastestNeighbour(neighbours, endBlock);
 		if (fastestNeighbour == (startBlock + 1)) {
@@ -45,6 +46,9 @@ function Pathfinder(physics) {
 
 	function calculateFastestNeighbour(neighbours, endBlock) {
 		var endX = endBlock % 28;
+		if (endX == 0) {
+			endX = 28;
+		}
 		var endY = Math.ceil(endBlock / 28);
 		var fastest = 99999;
 		var fastestNeighbour = null;
@@ -84,6 +88,43 @@ function Pathfinder(physics) {
 		if (oppositeDirection != DOWN) {
 			if (physics.isWalkableBlock(currentBlock + 28)) {
 				return DOWN;
+			}
+		}
+	}
+
+	// pathfinder used by speedy (pinky)
+	function findFourBlocksInDirection(startBlock, direction) {
+		if (direction == RIGHT) {
+			var noOfBlocksToTheRight = 28 - (startBlock % 28);
+			if (noOfBlocksToTheRight < 4) {
+				return startBlock + noOfBlocksToTheRight;
+			}
+			return startBlock + 4;
+		} else if (direction == LEFT) {
+			var noOfBlocksToTheLeft = (startBlock % 28) - 1;
+			if (noOfBlocksToTheLeft < 4) {
+				return startBlock - noOfBlocksToTheLeft;
+			}
+			return startBlock - 4;
+		} else if (direction == UP) {
+			if (startBlock - 112 > 0) {
+				return startBlock - 112;
+			} else if (startBlock - 84 > 0) {
+				return startBlock - 84;
+			} else if (startBlock - 56 > 0) {
+				return startBlock - 56;
+			} else if (startBlock - 28 > 0) {
+				return startBlock - 28;
+			}
+		} else if (direction == DOWN) {
+			if (startBlock + 112 < 868) {
+				return startBlock + 112;
+			} else if (startBlock + 84 < 868) {
+				return startBlock + 84;
+			} else if (startBlock + 56 < 868) {
+				return startBlock + 56;
+			} else if (startBlock + 28 < 868) {
+				return startBlock + 28;
 			}
 		}
 	}

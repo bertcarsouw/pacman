@@ -10,6 +10,7 @@ function Printer(canvas) {
 	this.eraseDot = eraseDot;
 	this.eraseGhost = eraseGhost;
 	this.printBlinky = printBlinky;
+	this.printPinky = printPinky;
 
 	var context = canvas.getContext(),
 		levelImage = canvas.getLevelImage(),
@@ -142,6 +143,46 @@ function Printer(canvas) {
 			y - 13.5, 
 			56, 56
 		);
+	}
+
+	function printPinky(x, y, direction, open) {
+		var pinkyImage = getPinkyImage(direction, open);
+		context.drawImage(
+			sprite, 
+			pinkyImage[0], 
+			pinkyImage[1], 
+			56, 56, 
+			x - 13.5, 
+			y - 13.5, 
+			56, 56
+		);
+	}
+
+	function getPinkyImage(direction, open) {
+		if (direction == RIGHT) {
+			if (open) {
+				return [836, 4];
+			}
+			return [836, 68];
+		} 
+		if (direction == DOWN) {
+			if (open) {
+				return [836, 132];
+			}
+			return [836, 196];
+		}
+		if (direction == LEFT) {
+			if (open) {
+				return [836, 260];
+			}
+			return [836, 324];
+		}
+		if (direction == UP) {
+			if (open) {
+				return [836, 388];
+			}
+			return [836, 452];
+		}
 	}
 
 	function getBlinkyImage(direction, open) {

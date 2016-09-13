@@ -1,7 +1,8 @@
 function Game() {
 
 	var pacmanHandler = null,
-		blinkyHandler = null;
+		blinkyHandler = null,
+		pinkyHandler = null;
 
 	var canvas = new Canvas(),
 		physics = new Physics(),
@@ -10,6 +11,7 @@ function Game() {
 		pacman = new Pacman(),
 		controls = new Controls(pacman),
 		blinky = new Ghost(),
+		pinky = new Ghost(),
 		pathfinder = new Pathfinder(physics);
 
 	document.addEventListener('canvasLoaded', loadGameObjects, false);
@@ -22,16 +24,19 @@ function Game() {
 		start();
 	}
 
+	function start() {
+		pacmanHandler = setInterval(handlePacman, pacman.getSpeed());
+		blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
+		pinky.setX(6 * 33 + 1);
+		pinky.setY(10 * 33 + 1);
+		pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
+	}
+
 	function setupPoints() {
 		var pointBlocks = level.getPointBlocks();
 		pointBlocks.forEach(function(pointBlock) {
 			printer.printDot(pointBlock);
 		});
-	}
-
-	function start() {
-		pacmanHandler = setInterval(handlePacman, pacman.getSpeed());
-		blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
 	}
 
 	function handlePacman() {
@@ -118,7 +123,7 @@ function Game() {
 			var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
 			if (physics.onCrossroads(blockNumber)) {
 				var pacmanBlockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());	
-				var newDirection = pathfinder.findDirectionToPacman(blockNumber, pacmanBlockNumber, blinky.getDirection());
+				var newDirection = pathfinder.findDirectionToBlock(blockNumber, pacmanBlockNumber, blinky.getDirection());
 				blinky.setDirection(newDirection);
 			} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, blinky.getDirection()))) {
 				var newDirection = pathfinder.findNewGhostDirection(blockNumber, blinky.getDirection());
@@ -133,6 +138,29 @@ function Game() {
 		}
 		blinky.move();
 		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen());
+	}
+
+	function handlePinky() {
+		printer.eraseGhost(pinky.getX(), pinky.getY());
+		if (physics.isNewBlock(pinky.getX(), pinky.getY())) {
+			var blockNumber = physics.getBlockNumber(pinky.getX(), pinky.getY());
+			if (physics.onCrossroads(blockNumber)) {
+				var pacmanBlockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());	
+				var endBlock = pathfinder.findFourBlocksInDirection(pacmanBlockNumber, pacman.getDirection());
+				console.log(endBlock)
+				var newDirection = pathfinder.findDirectionToBlock(blockNumber, endBlock, pinky.getDirection());
+				pinky.setDirection(newDirection);
+			} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, pinky.getDirection()))) {
+				var newDirection = pathfinder.findNewGhostDirection(blockNumber, pinky.getDirection());
+				pinky.setDirection(newDirection);
+			}
+			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
+			pointsToRedraw.forEach(function(point) {
+				printer.printDot(point);
+			});
+		}
+		pinky.move();
+		printer.printPinky(pinky.getX(), pinky.getY(), pinky.getDirection(), pinky.isOpen());
 	}
 
 }
