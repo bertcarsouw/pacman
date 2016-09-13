@@ -27,9 +27,10 @@ function Game() {
 	function start() {
 		pacmanHandler = setInterval(handlePacman, pacman.getSpeed());
 		blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
-		pinky.setX(6 * 33 + 1);
-		pinky.setY(10 * 33 + 1);
-		pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
+		blinky.setScatterTimer();
+		// pinky.setX(6 * 33 + 1);
+		// pinky.setY(10 * 33 + 1);
+		// pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
 	}
 
 	function setupPoints() {
@@ -59,15 +60,13 @@ function Game() {
 			if (currentBlock == 393) {
 				if (pacman.getDirection() == LEFT) {
 					pacman.move();
-					printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
-					printer.printExcessTunnels();
+					printPacmanAndGhosts();
 					return;
 				}
 			} else if (currentBlock == 420) {
 				if (pacman.getDirection() == RIGHT) {
 					pacman.move();
-					printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
-					printer.printExcessTunnels();
+					printPacmanAndGhosts();
 					return;
 				}
 			} else if (physics.isNewBlock(pacX, pacY) && currentBlock == 392 && pacman.getDirection() == LEFT) {
@@ -110,17 +109,47 @@ function Game() {
 			alert('done');
 		}
 
-		printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
-		if (physics.inTunnel(currentBlock)) {
-			printer.printExcessTunnels();
-		}
+		printPacmanAndGhosts();
 
 	}
 
 	function handleBlinky() {
+
 		printer.eraseGhost(blinky.getX(), blinky.getY());
+		var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
+
+		if (physics.inTunnel(blockNumber)) {
+			if (blinky.getSpeed() !== GHOST_TUNNEL_SPEED) {
+				blinky.setTunnelSpeed(true);
+				clearInterval(blinkyHandler);
+				blinkyHandler = setInterval(handleBlinky, GHOST_TUNNEL_SPEED);
+			}
+			if (blockNumber == 393) {
+				if (blinky.getDirection() == LEFT) {
+					blinky.move();
+					printPacmanAndGhosts();
+					return;
+				}
+			} else if (blockNumber == 420) {
+				if (blinky.getDirection() == RIGHT) {
+					blinky.move();
+					printPacmanAndGhosts();
+					return;
+				}
+			} else if (physics.isNewBlock(blinky.getX(), blinky.getY()) && blockNumber == 392 && blinky.getDirection() == LEFT) {
+				blinky.setX(28 * 33 + 4);
+			} else if (physics.isNewBlock(blinky.getX(), blinky.getY()) && blockNumber == 421 && blinky.getDirection() == RIGHT) {
+				blinky.setX(-1 * 33 + 4);
+			}
+		} else {
+			if (blinky.getSpeed() == GHOST_TUNNEL_SPEED) {
+				blinky.setTunnelSpeed(false);
+				clearInterval(blinkyHandler);
+				blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
+			}
+		}
+		
 		if (physics.isNewBlock(blinky.getX(), blinky.getY())) {
-			var blockNumber = physics.getBlockNumber(blinky.getX(), blinky.getY());
 			if (physics.onCrossroads(blockNumber)) {
 				var pacmanBlockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());	
 				var newDirection = pathfinder.findDirectionToBlock(blockNumber, pacmanBlockNumber, blinky.getDirection());
@@ -129,25 +158,58 @@ function Game() {
 				var newDirection = pathfinder.findNewGhostDirection(blockNumber, blinky.getDirection());
 				blinky.setDirection(newDirection);
 			}
-
 			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
 			pointsToRedraw.forEach(function(point) {
 				printer.printDot(point);
 			});
-
 		}
+
 		blinky.move();
-		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen());
+
+		printPacmanAndGhosts();
+
 	}
 
 	function handlePinky() {
+
 		printer.eraseGhost(pinky.getX(), pinky.getY());
+		var blockNumber = physics.getBlockNumber(pinky.getX(), pinky.getY());
+		
+		if (physics.inTunnel(blockNumber)) {
+			if (pinky.getSpeed() !== GHOST_TUNNEL_SPEED) {
+				pinky.setTunnelSpeed(true);
+				clearInterval(pinkyHandler);
+				pinkyHandler = setInterval(handlePinky, GHOST_TUNNEL_SPEED);
+			}
+			if (blockNumber == 393) {
+				if (pinky.getDirection() == LEFT) {
+					pinky.move();
+					printPacmanAndGhosts();
+					return;
+				}
+			} else if (blockNumber == 420) {
+				if (pinky.getDirection() == RIGHT) {
+					pinky.move();
+					printPacmanAndGhosts();
+					return;
+				}
+			} else if (physics.isNewBlock(pinky.getX(), pinky.getY()) && blockNumber == 392 && pinky.getDirection() == LEFT) {
+				pinky.setX(28 * 33 + 4);
+			} else if (physics.isNewBlock(pinky.getX(), pinky.getY()) && blockNumber == 421 && pinky.getDirection() == RIGHT) {
+				pinky.setX(-1 * 33 + 4);
+			}
+		} else {
+			if (pinky.getSpeed() == GHOST_TUNNEL_SPEED) {
+				pinky.setTunnelSpeed(false);
+				clearInterval(pinkyHandler);
+				pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
+			}
+		}
+
 		if (physics.isNewBlock(pinky.getX(), pinky.getY())) {
-			var blockNumber = physics.getBlockNumber(pinky.getX(), pinky.getY());
 			if (physics.onCrossroads(blockNumber)) {
 				var pacmanBlockNumber = physics.getBlockNumber(pacman.getX(), pacman.getY());	
 				var endBlock = pathfinder.findFourBlocksInDirection(pacmanBlockNumber, pacman.getDirection());
-				console.log(endBlock)
 				var newDirection = pathfinder.findDirectionToBlock(blockNumber, endBlock, pinky.getDirection());
 				pinky.setDirection(newDirection);
 			} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, pinky.getDirection()))) {
@@ -159,8 +221,17 @@ function Game() {
 				printer.printDot(point);
 			});
 		}
+
 		pinky.move();
+		printPacmanAndGhosts();
+
+	}
+
+	function printPacmanAndGhosts() {
+		printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
 		printer.printPinky(pinky.getX(), pinky.getY(), pinky.getDirection(), pinky.isOpen());
+		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen());
+		printer.printExcessTunnels();
 	}
 
 }

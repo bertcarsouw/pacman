@@ -5,6 +5,8 @@ var UP = 1,
 	LEFT = 3,
 	RIGHT = 4;
 
+var GHOST_TUNNEL_SPEED = 30;
+
 function printDirection(directionToPrint) {
 	if (directionToPrint == 1) {
 		console.log('UP');
