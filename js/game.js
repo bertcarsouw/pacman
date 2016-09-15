@@ -152,10 +152,14 @@ function Game() {
 			if (blockNumber == 393) {
 				if (blinky.getDirection() == LEFT) {
 					blinky.move();
+					printPacmanAndGhosts();
+					return;
 				}
 			} else if (blockNumber == 420) {
 				if (blinky.getDirection() == RIGHT) {
 					blinky.move();
+					printPacmanAndGhosts();
+					return;
 				}
 			} else if (physics.isNewBlock(blinky.getX(), blinky.getY()) && blockNumber == 392 && blinky.getDirection() == LEFT) {
 				blinky.setX(28 * 33 + 4);
@@ -205,10 +209,14 @@ function Game() {
 			if (blockNumber == 393) {
 				if (pinky.getDirection() == LEFT) {
 					pinky.move();
+					printPacmanAndGhosts();
+					return;
 				}
 			} else if (blockNumber == 420) {
 				if (pinky.getDirection() == RIGHT) {
 					pinky.move();
+					printPacmanAndGhosts();
+					return;
 				}
 			} else if (physics.isNewBlock(pinky.getX(), pinky.getY()) && blockNumber == 392 && pinky.getDirection() == LEFT) {
 				pinky.setX(28 * 33 + 4);
