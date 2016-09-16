@@ -14,11 +14,13 @@ function Ghost() {
 	this.setScatterTimer = setScatterTimer;
 	this.inScatterMode = inScatterMode;
 	this.setFirstScatterMove = setFirstScatterMove;
-	this.getFirstScatterMove = getFirstScatterMove;
+	this.isFirstScatterMove = isFirstScatterMove;
+	this.isEdible = isEdible;
+	this.setEdible = setEdible;
 
 	var x = 13 * 33 + 19,
 		y = 11 * 33 + 1, 
-		direction = LEFT,
+		direction = RIGHT,
 		open = false,
 		openCounter = 0,
 		openSpeed = 10,
@@ -26,7 +28,8 @@ function Ghost() {
 		beforeTunnelSpeed = 0,
 		scatterMode,
 		scatterTimer = null,
-		firstScatterMove = true;
+		firstScatterMove = false,
+		edible = false;
 
 	function getX() {
 		return x;
@@ -72,7 +75,7 @@ function Ghost() {
 		firstScatterMove = newFirstScatterMove;
 	}
 
-	function getFirstScatterMove() {
+	function isFirstScatterMove() {
 		return firstScatterMove;
 	}
 
@@ -105,6 +108,7 @@ function Ghost() {
 	}
 
 	function setScatterTimer() {
+		firstScatterMove = true;
 		scatterMode = true;
 		scatterTimer = setInterval(cancelScatterTimer, 7000);
 	}
@@ -113,6 +117,14 @@ function Ghost() {
 		scatterMode = false;
 		clearInterval(scatterTimer);
 		firstScatterMove = true;
+	}
+
+	function isEdible() {
+		return edible;
+	}
+
+	function setEdible(newEdible) {
+		edible = newEdible;
 	}
 
 }

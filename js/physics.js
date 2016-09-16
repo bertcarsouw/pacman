@@ -8,6 +8,7 @@ function Physics() {
 	this.inTunnel = inTunnel;
 	this.getInvadingBlockNumber = getInvadingBlockNumber;
 	this.onCrossroads = onCrossroads;
+	this.isAtLeastEightTilesAway = isAtLeastEightTilesAway;
 
 	var walkableBlocks = [
 		30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
@@ -107,6 +108,15 @@ function Physics() {
 
 	function isWalkableBlock(blockNumber) {
 		return walkableBlocks.indexOf(blockNumber) != -1;
+	}
+
+	function isAtLeastEightTilesAway(ghostX, ghostY, pacX, pacY) {
+		var horizontal = Math.abs(ghostX - pacX);
+		var vertical = Math.abs(ghostY - pacY);
+		horizontal = horizontal * horizontal;
+		vertical = vertical * vertical;
+		var distance = Math.sqrt(horizontal + vertical);
+		return distance >= (8 * 33);
 	}
 
 }

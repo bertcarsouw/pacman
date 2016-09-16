@@ -11,6 +11,7 @@ function Printer(canvas) {
 	this.eraseGhost = eraseGhost;
 	this.printBlinky = printBlinky;
 	this.printPinky = printPinky;
+	this.printClyde = printClyde;
 
 	var context = canvas.getContext(),
 		levelImage = canvas.getLevelImage(),
@@ -162,6 +163,23 @@ function Printer(canvas) {
 		);
 	}
 
+	function printClyde(x, y, direction, open, scatterMode) {
+		if (scatterMode) {
+			printScatterGhost(x, y, open);
+		} else {
+	 		var clydeImage = getClydeImage(direction, open);
+			context.drawImage(
+				sprite, 
+				clydeImage[0], 
+				clydeImage[1], 
+				56, 56, 
+				x - 13.5, 
+				y - 13.5, 
+				56, 56
+			);
+		}
+	}
+
 	function printPinky(x, y, direction, open, scatterMode) {
 		if (scatterMode) {
 			printScatterGhost(x, y, open);
@@ -203,6 +221,33 @@ function Printer(canvas) {
 				return [836, 388];
 			}
 			return [836, 452];
+		}
+	}
+
+	function getClydeImage(direction, open) {
+		if (direction == RIGHT) {
+			if (open) {
+				return [772, 4];
+			}
+			return [772, 68];
+		} 
+		if (direction == DOWN) {
+			if (open) {
+				return [772, 132];
+			}
+			return [772, 196];
+		}
+		if (direction == LEFT) {
+			if (open) {
+				return [772, 260];
+			}
+			return [772, 324];
+		}
+		if (direction == UP) {
+			if (open) {
+				return [772, 388];
+			}
+			return [772, 452];
 		}
 	}
 
