@@ -7,7 +7,9 @@ function Printer(canvas) {
 	this.erasePacman = erasePacman;	
 	this.printExcessTunnels = printExcessTunnels;
 	this.printDot = printDot;
+	this.printSpecialDot = printSpecialDot;
 	this.eraseDot = eraseDot;
+	this.eraseSpecialDot = eraseSpecialDot; 
 	this.eraseGhost = eraseGhost;
 	this.printBlinky = printBlinky;
 	this.printPinky = printPinky;
@@ -128,10 +130,28 @@ function Printer(canvas) {
 		context.fillRect(horizontal * 33 + 13.5, vertical * 33 + 13.5, 8, 8);
 	}
 
+	function printSpecialDot(blockNumber) {
+		var vertical = Math.ceil(blockNumber / 28) - 1;
+		var horizontal = blockNumber % 28 - 1;
+		context.beginPath();
+	    context.arc(horizontal * 33 + 16.5, vertical * 33 + 16.5, 14, 0, 2 * Math.PI, false);
+	    context.fillStyle = '#FFFFFF';
+	    context.fill();
+	    context.lineWidth = 5;
+	    context.strokeStyle = '#FFFFFF';
+	    context.stroke();
+	}
+
 	function eraseDot(blockNumber) {
 		var vertical = Math.ceil(blockNumber / 28) - 1;
 		var horizontal = blockNumber % 28 - 1;
 		context.clearRect(horizontal * 33 + 12.5, vertical * 33 + 12.5, 10, 10);
+	}
+
+	function eraseSpecialDot(blockNumber) {
+		var vertical = Math.ceil(blockNumber / 28) - 1;
+		var horizontal = blockNumber % 28 - 1;
+		context.clearRect(horizontal * 33 - 1, vertical * 33 - 1, 35, 35);
 	}
 
 	function printBlinky(x, y, direction, open, scatterMode) {

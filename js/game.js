@@ -21,21 +21,28 @@ function Game() {
 	document.addEventListener('canvasLoaded', loadGameObjects, false);
 
 	function loadGameObjects() {
-		printer.printLevel();
-		// printer.printGrid();
-		// printer.printGridNumbers();
-		setupPoints();
-		start();
+		// bam var for dev purposes
+		var bam = true;
+		if (bam) {
+			printer.printLevel();
+			setupPoints();
+			start();
+		} else {
+			printer.printLevel();
+			// printer.printGrid();
+			setupPoints();
+			// printer.printGridNumbers();
+		}
 	}
 
 	function start() {
 	
-		pacmanHandler = setInterval(handlePacman, pacman.getSpeed());
-
 		blinky.setName('blinky');
 		inky.setName('inky');
 		clyde.setName('clyde');
 		pinky.setName('pinky');
+		
+		pacmanHandler = setInterval(handlePacman, pacman.getSpeed());
 		
 		blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
 		blinky.setScatterTimer();
@@ -44,21 +51,33 @@ function Game() {
 		pinky.setX(6 * 33 + 1);
 		pinky.setY(10 * 33 + 1);
 		pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
+		pinky.setScatterTimer();
+		pinky.setFirstScatterMove(false);
 		
+
 		clyde.setX(12 * 33 + 1);
 		clyde.setY(17 * 33 + 1);
 		clydeHandler = setInterval(handleClyde, clyde.getSpeed());
+		clyde.setScatterTimer();
+		clyde.setFirstScatterMove(false);
+		
 
 		inky.setX(6 * 33 + 1);
 		inky.setY(24 * 33 + 1);
 		inkyHandler = setInterval(handleInky, inky.getSpeed());
-	
+		inky.setScatterTimer();
+		inky.setFirstScatterMove(false);
+
 	}
 
 	function setupPoints() {
 		var pointBlocks = level.getPointBlocks();
 		pointBlocks.forEach(function(pointBlock) {
-			printer.printDot(pointBlock);
+			if (level.isSpecialBlock(pointBlock)) {
+				printer.printSpecialDot(pointBlock);
+			} else {
+				printer.printDot(pointBlock);
+			}
 		});
 	}
 
@@ -123,8 +142,13 @@ function Game() {
 
 		var invadingBlockNumber = physics.getInvadingBlockNumber(pacX, pacY, pacman.getDirection());
 		if (level.isPoint(invadingBlockNumber)) {
-			printer.eraseDot(invadingBlockNumber);
 			level.removeDot(invadingBlockNumber);
+			if (level.isSpecialBlock(invadingBlockNumber)) {
+				// SPECIAL DOT EATEN -> set ghosts scatter mode + edible
+				printer.eraseSpecialDot(invadingBlockNumber);
+			} else {
+				printer.eraseDot(invadingBlockNumber);
+			}
 			if (level.dotsLeft() == 600) {
 				setCruiseElroy();
 			}
@@ -132,7 +156,7 @@ function Game() {
 
  		var ghostsEaten = isGhostCollision();
  		if (ghostsEaten.length > 0) {
- 			alert('you died! killed by ' + ghostsEaten[0]);
+ 			console.log('you died! killed by ' + ghostsEaten[0]);
 		}
 
 		if (level.finished()) {
@@ -143,9 +167,42 @@ function Game() {
 
 	}
 
+	var clydeScatterMode = true;
 	function handleClyde() {
 		printer.eraseGhost(clyde.getX(), clyde.getY());
 		var blockNumber = physics.getBlockNumber(clyde.getX(), clyde.getY());
+
+		if (clyde.inScatterMode()) {
+			clydeScatterMode = true;
+			if (physics.isNewBlock(clyde.getX(), clyde.getY())) {
+				if (clyde.isFirstScatterMove()) {
+					clyde.setDirection(physics.getOppositeDirection(clyde.getDirection()));
+					clyde.setFirstScatterMove(false);
+				} else {
+					if (physics.onCrossroads(blockNumber)) {
+						var newDirection = pathfinder.findDirectionToBlock(blockNumber, 814, clyde.getDirection());
+						clyde.setDirection(newDirection);
+					} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, clyde.getDirection()))) {
+						var newDirection = pathfinder.findNewGhostDirection(blockNumber, clyde.getDirection());
+						clyde.setDirection(newDirection);
+					}
+				} 
+			}
+
+			redrawPoints(blockNumber);
+			
+			clyde.move();
+			printPacmanAndGhosts();
+			return;
+
+		} else if (clydeScatterMode) {
+			// at this point clyde just got out of scattermode
+			clydeScatterMode = false;
+			clyde.setDirection(physics.getOppositeDirection(clyde.getDirection()));
+			clyde.move();
+			printPacmanAndGhosts();
+			return;
+		}
 
 		if (physics.inTunnel(blockNumber)) {
 			if (clyde.getSpeed() !== GHOST_TUNNEL_SPEED) {
@@ -193,10 +250,7 @@ function Game() {
 				var newDirection = pathfinder.findNewGhostDirection(blockNumber, clyde.getDirection());
 				clyde.setDirection(newDirection);
 			}
-			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
-			pointsToRedraw.forEach(function(point) {
-				printer.printDot(point);
-			});
+			redrawPoints(blockNumber);
 		}
 
 		clyde.move();
@@ -228,10 +282,7 @@ function Game() {
 				} 
 			}
 
-			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
-			pointsToRedraw.forEach(function(point) {
-				printer.printDot(point);
-			});
+			redrawPoints(blockNumber);
 			
 			blinky.move();
 			printPacmanAndGhosts();
@@ -286,10 +337,7 @@ function Game() {
 				var newDirection = pathfinder.findNewGhostDirection(blockNumber, blinky.getDirection());
 				blinky.setDirection(newDirection);
 			}
-			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
-			pointsToRedraw.forEach(function(point) {
-				printer.printDot(point);
-			});
+			redrawPoints(blockNumber);
 		}
 
 		blinky.move();
@@ -298,10 +346,43 @@ function Game() {
 
 	}
 
+	var pinkyScatterMode = true;
 	function handlePinky() {
 
 		printer.eraseGhost(pinky.getX(), pinky.getY());
 		var blockNumber = physics.getBlockNumber(pinky.getX(), pinky.getY());
+
+		if (pinky.inScatterMode()) {
+			pinkyScatterMode = true;
+			if (physics.isNewBlock(pinky.getX(), pinky.getY())) {
+				if (pinky.isFirstScatterMove()) {
+					pinky.setDirection(physics.getOppositeDirection(pinky.getDirection()));
+					pinky.setFirstScatterMove(false);
+				} else {
+					if (physics.onCrossroads(blockNumber)) {
+						var newDirection = pathfinder.findDirectionToBlock(blockNumber, 30, pinky.getDirection());
+						pinky.setDirection(newDirection);
+					} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, pinky.getDirection()))) {
+						var newDirection = pathfinder.findNewGhostDirection(blockNumber, pinky.getDirection());
+						pinky.setDirection(newDirection);
+					}
+				} 
+			}
+
+			redrawPoints(blockNumber);
+			
+			pinky.move();
+			printPacmanAndGhosts();
+			return;
+
+		} else if (pinkyScatterMode) {
+			// at this point pinky just got out of scattermode
+			pinkyScatterMode = false;
+			pinky.setDirection(physics.getOppositeDirection(pinky.getDirection()));
+			pinky.move();
+			printPacmanAndGhosts();
+			return;
+		}
 
 		if (physics.inTunnel(blockNumber)) {
 			if (pinky.getSpeed() !== GHOST_TUNNEL_SPEED) {
@@ -344,10 +425,7 @@ function Game() {
 				var newDirection = pathfinder.findNewGhostDirection(blockNumber, pinky.getDirection());
 				pinky.setDirection(newDirection);
 			}
-			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
-			pointsToRedraw.forEach(function(point) {
-				printer.printDot(point);
-			});
+			redrawPoints(blockNumber);
 		}
 
 		pinky.move();
@@ -355,10 +433,43 @@ function Game() {
 
 	}
 
+	var inkyScatterMode = true;
 	function handleInky() {
 
 		printer.eraseGhost(inky.getX(), inky.getY());
 		var blockNumber = physics.getBlockNumber(inky.getX(), inky.getY());
+
+		if (inky.inScatterMode()) {
+			inkyScatterMode = true;
+			if (physics.isNewBlock(inky.getX(), inky.getY())) {
+				if (inky.isFirstScatterMove()) {
+					inky.setDirection(physics.getOppositeDirection(inky.getDirection()));
+					inky.setFirstScatterMove(false);
+				} else {
+					if (physics.onCrossroads(blockNumber)) {
+						var newDirection = pathfinder.findDirectionToBlock(blockNumber, 839, inky.getDirection());
+						inky.setDirection(newDirection);
+					} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, inky.getDirection()))) {
+						var newDirection = pathfinder.findNewGhostDirection(blockNumber, inky.getDirection());
+						inky.setDirection(newDirection);
+					}
+				} 
+			}
+
+			redrawPoints(blockNumber);
+			
+			inky.move();
+			printPacmanAndGhosts();
+			return;
+
+		} else if (inkyScatterMode) {
+			// at this point inky just got out of scattermode
+			inkyScatterMode = false;
+			inky.setDirection(physics.getOppositeDirection(inky.getDirection()));
+			inky.move();
+			printPacmanAndGhosts();
+			return;
+		}
 
 		if (physics.inTunnel(blockNumber)) {
 			if (inky.getSpeed() !== GHOST_TUNNEL_SPEED) {
@@ -403,10 +514,7 @@ function Game() {
 				var newDirection = pathfinder.findNewGhostDirection(blockNumber, inky.getDirection());
 				inky.setDirection(newDirection);
 			}
-			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
-			pointsToRedraw.forEach(function(point) {
-				printer.printDot(point);
-			});
+			redrawPoints(blockNumber);
 		}
 
 		inky.move();
@@ -426,6 +534,17 @@ function Game() {
 		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen(), blinky.isEdible());
 		printer.printInky(inky.getX(), inky.getY(), inky.getDirection(), inky.isOpen(), inky.isEdible());
 		printer.printExcessTunnels();
+	}
+
+	function redrawPoints(blockNumber) {
+		var pointsToRedraw = level.getSurroundingPoints(blockNumber);
+		pointsToRedraw.forEach(function(point) {
+			if (level.isSpecialBlock(point)) {
+				printer.printSpecialDot(point);
+			} else {
+				printer.printDot(point);
+			}
+		});
 	}
 
 	function isGhostCollision() {
