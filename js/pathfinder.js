@@ -3,7 +3,9 @@ function Pathfinder(physics) {
 	this.findDirectionToBlock = findDirectionToBlock;
 	this.findNewGhostDirection = findNewGhostDirection;
 	this.findFourBlocksInDirection = findFourBlocksInDirection;
-
+	this.findTwoBlocksInFrontPosition = findTwoBlocksInFrontPosition;
+	this.getRequiredInkyPosition = getRequiredInkyPosition;
+	
 	function findDirectionToBlock(startBlock, endBlock, direction) {
 		var neighbours = getAvailableNeighbours(startBlock, direction);
 		var fastestNeighbour = calculateFastestNeighbour(neighbours, endBlock);
@@ -127,6 +129,128 @@ function Pathfinder(physics) {
 				return startBlock + 28;
 			}
 		}
+	}
+
+	function findTwoBlocksInFrontPosition(x, y, direction) {
+		// in center pacman
+		x += 26;
+		y += 26;
+
+		if (direction == RIGHT)  {
+			x += 66;
+		} else if (direction == LEFT) {
+			x -= 66;
+		} else if (direction == UP) {
+			y -= 66;
+		} else if (direction == DOWN) {
+			y += 66;
+		}
+
+		if (x < 0) {
+			x = 0;
+		} else if (x > 925) {
+			x = 925;
+		}
+		if (y < 0) {
+			y = 0;
+		} else if (y > 1024) {
+			y = 1024
+		}
+
+		return [x, y];
+
+	}
+
+	function getRequiredInkyPosition(blinkyPosition, twoBlocksInFrontPacmanPosition) {
+		
+		var newEndpoint  = [];
+
+		var horizontal = Math.abs(blinkyPosition[0] - twoBlocksInFrontPacmanPosition[0]);
+		var vertical = Math.abs(blinkyPosition[1] - twoBlocksInFrontPacmanPosition[1]);
+		
+		newEndpoint[0] = twoBlocksInFrontPacmanPosition[0];
+		newEndpoint[1] = twoBlocksInFrontPacmanPosition[1];
+
+		var down = blinkyPosition[1] < twoBlocksInFrontPacmanPosition[1];
+
+		if (blinkyPosition[0] < twoBlocksInFrontPacmanPosition[0]) {
+			// right
+			if (down) {
+				newEndpoint[0] += horizontal;
+				newEndpoint[1] += vertical;
+			} else {
+				newEndpoint[0] += horizontal;
+				newEndpoint[1] -= vertical;
+			}
+		} else {
+			//left
+			if (down) {
+				// down
+				newEndpoint[0] -= horizontal;
+				newEndpoint[1] += vertical;	
+			} else {
+				// up
+				newEndpoint[0] -= horizontal;
+				newEndpoint[1] -= vertical;
+			}
+		}
+
+		horizontal = blinkyPosition[0] - twoBlocksInFrontPacmanPosition[0];
+		vertical = blinkyPosition[1] - twoBlocksInFrontPacmanPosition[1];
+
+		if (isOutOfGrid(newEndpoint)) {
+			// y = ax + b;
+			var a = vertical / horizontal;
+			if (a == Infinity) {
+				a = 999999;
+			} else if (a == -Infinity) {
+				a = 0.0001;
+			}
+
+			var b = blinkyPosition[1] - a * blinkyPosition[0];
+
+			// alert(a);
+			// alert(b);
+
+			if (newEndpoint[0] < 0) {
+				// set x to 200
+				newEndpoint[0] = 0;
+				newEndpoint[1] = b;
+			} else if (newEndpoint[0] > 1024) {
+				// set x to 600
+				newEndpoint[0] = 1024;
+				newEndpoint[1] = a * 1024 + b;
+			}
+
+			if (newEndpoint[1] < 0) {
+				// set y to 200
+
+				// y = ax + b;
+				// y - b = ax;
+				// x = (y - b) / a
+				newEndpoint[1] = 0;
+				newEndpoint[0] = (0 - b) / a;
+			} else if (newEndpoint[1] > 1024) {
+				// set y to 600
+				newEndpoint[1] = 1024;
+				newEndpoint[0] = (1024 - b) / a;
+			}
+
+			return [newEndpoint[0], newEndpoint[1]];
+		} else {
+			return [newEndpoint[0], newEndpoint[1]];
+		}
+	
+	}
+
+	function isOutOfGrid(point) {
+		if (point[0] < 0 || point[0] > 925) {
+			return true;
+		}
+		if (point[1] < 0 || point[1] > 1024) {
+			return true;
+		}
+		return false;
 	}
 
 }

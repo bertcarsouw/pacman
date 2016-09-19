@@ -3,7 +3,8 @@ function Game() {
 	var pacmanHandler = null,
 		blinkyHandler = null,
 		pinkyHandler = null,
-		clydeHandler = null;
+		clydeHandler = null,
+		inkyHandler = null;
 
 	var canvas = new Canvas(),
 		physics = new Physics(),
@@ -14,6 +15,7 @@ function Game() {
 		blinky = new Ghost(),
 		pinky = new Ghost(),
 		clyde = new Ghost(),
+		inky = new Ghost(),
 		pathfinder = new Pathfinder(physics);
 
 	document.addEventListener('canvasLoaded', loadGameObjects, false);
@@ -41,6 +43,10 @@ function Game() {
 		clyde.setX(12 * 33 + 1);
 		clyde.setY(17 * 33 + 1);
 		clydeHandler = setInterval(handleClyde, clyde.getSpeed());
+
+		inky.setX(6 * 33 + 1);
+		inky.setY(24 * 33 + 1);
+		inkyHandler = setInterval(handleInky, inky.getSpeed());
 	
 	}
 
@@ -114,7 +120,11 @@ function Game() {
 		if (level.isPoint(invadingBlockNumber)) {
 			printer.eraseDot(invadingBlockNumber);
 			level.removeDot(invadingBlockNumber);
-		}
+			console.log(level.dotsLeft());
+			if (level.dotsLeft() == 200) {
+				setCruiseElroy();
+			}
+ 		}
 
 		if (level.finished()) {
 			alert('done');
@@ -336,11 +346,76 @@ function Game() {
 
 	}
 
+	function handleInky() {
+
+		printer.eraseGhost(inky.getX(), inky.getY());
+		var blockNumber = physics.getBlockNumber(inky.getX(), inky.getY());
+
+		if (physics.inTunnel(blockNumber)) {
+			if (inky.getSpeed() !== GHOST_TUNNEL_SPEED) {
+				inky.setTunnelSpeed(true);
+				clearInterval(inkyHandler);
+				inkyHandler = setInterval(handleInky, GHOST_TUNNEL_SPEED);
+			}
+			if (blockNumber == 393) {
+				if (inky.getDirection() == LEFT) {
+					inky.move();
+					printPacmanAndGhosts();
+					return;
+				}
+			} else if (blockNumber == 420) {
+				if (inky.getDirection() == RIGHT) {
+					inky.move();
+					printPacmanAndGhosts();
+					return;
+				}
+			} else if (physics.isNewBlock(inky.getX(), inky.getY()) && blockNumber == 392 && inky.getDirection() == LEFT) {
+				inky.setX(28 * 33 + 4);
+			} else if (physics.isNewBlock(inky.getX(), inky.getY()) && blockNumber == 421 && inky.getDirection() == RIGHT) {
+				inky.setX(-1 * 33 + 4);
+			}
+		} else {
+			if (inky.getSpeed() == GHOST_TUNNEL_SPEED) {
+				inky.setTunnelSpeed(false);
+				clearInterval(inkyHandler);
+				inkyHandler = setInterval(handleInky, inky.getSpeed());
+			}
+		}
+
+		if (physics.isNewBlock(inky.getX(), inky.getY())) {
+			if (physics.onCrossroads(blockNumber)) {
+				var twoBlocksFurtherPacman = pathfinder.findTwoBlocksInFrontPosition(pacman.getX(), pacman.getY(), pacman.getDirection());
+				var blinkyPosition = [blinky.getX(), blinky.getY()];
+				var requiredInkyPosition = pathfinder.getRequiredInkyPosition(blinkyPosition, twoBlocksFurtherPacman);
+				var inkyBlockNumber = physics.getBlockNumber(requiredInkyPosition[0], requiredInkyPosition[1]);
+				var newDirection = pathfinder.findDirectionToBlock(blockNumber, inkyBlockNumber, inky.getDirection());
+				inky.setDirection(newDirection);
+			} else if (!physics.isWalkableBlock(physics.getNextBlockNumber(blockNumber, inky.getDirection()))) {
+				var newDirection = pathfinder.findNewGhostDirection(blockNumber, inky.getDirection());
+				inky.setDirection(newDirection);
+			}
+			var pointsToRedraw = level.getSurroundingPoints(blockNumber);
+			pointsToRedraw.forEach(function(point) {
+				printer.printDot(point);
+			});
+		}
+
+		inky.move();
+		printPacmanAndGhosts();
+	}
+
+	function setCruiseElroy() {
+		blinky.setSpeed(blinky.getSpeed() - 2);
+		clearInterval(blinkyHandler);
+		blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
+	}
+
 	function printPacmanAndGhosts() {
 		printer.printPacman(pacman.getX(), pacman.getY(), pacman.getDirection(), pacman.getAnimationState());
 		printer.printPinky(pinky.getX(), pinky.getY(), pinky.getDirection(), pinky.isOpen(), pinky.isEdible());
 		printer.printClyde(clyde.getX(), clyde.getY(), clyde.getDirection(), clyde.isOpen(), clyde.isEdible());
 		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen(), blinky.isEdible());
+		printer.printInky(inky.getX(), inky.getY(), inky.getDirection(), inky.isOpen(), inky.isEdible());
 		printer.printExcessTunnels();
 	}
 
