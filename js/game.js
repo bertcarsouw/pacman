@@ -31,6 +31,11 @@ function Game() {
 	function start() {
 	
 		pacmanHandler = setInterval(handlePacman, pacman.getSpeed());
+
+		blinky.setName('blinky');
+		inky.setName('inky');
+		clyde.setName('clyde');
+		pinky.setName('pinky');
 		
 		blinkyHandler = setInterval(handleBlinky, blinky.getSpeed());
 		blinky.setScatterTimer();
@@ -120,11 +125,15 @@ function Game() {
 		if (level.isPoint(invadingBlockNumber)) {
 			printer.eraseDot(invadingBlockNumber);
 			level.removeDot(invadingBlockNumber);
-			console.log(level.dotsLeft());
-			if (level.dotsLeft() == 200) {
+			if (level.dotsLeft() == 600) {
 				setCruiseElroy();
 			}
  		}
+
+ 		var ghostsEaten = isGhostCollision();
+ 		if (ghostsEaten.length > 0) {
+ 			alert('you died! killed by ' + ghostsEaten[0]);
+		}
 
 		if (level.finished()) {
 			alert('done');
@@ -417,6 +426,26 @@ function Game() {
 		printer.printBlinky(blinky.getX(), blinky.getY(), blinky.getDirection(), blinky.isOpen(), blinky.isEdible());
 		printer.printInky(inky.getX(), inky.getY(), inky.getDirection(), inky.isOpen(), inky.isEdible());
 		printer.printExcessTunnels();
+	}
+
+	function isGhostCollision() {
+
+		var ghosts = [];
+		ghosts.push(blinky);
+		ghosts.push(inky);
+		ghosts.push(pinky);
+		ghosts.push(clyde);
+
+		var ghostsEaten = [];
+		var limit = 20;
+		ghosts.forEach(function(ghost) {
+			if (Math.abs(ghost.getX() - pacman.getX()) < limit && Math.abs(ghost.getY() - pacman.getY()) < limit) {
+				ghostsEaten.push(ghost.getName());
+			}
+		});
+
+		return ghostsEaten;
+
 	}
 
 }

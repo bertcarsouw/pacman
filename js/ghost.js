@@ -17,6 +17,8 @@ function Ghost() {
 	this.isFirstScatterMove = isFirstScatterMove;
 	this.isEdible = isEdible;
 	this.setEdible = setEdible;
+	this.getName = getName;
+	this.setName = setName;
 
 	var x = 13 * 33 + 19,
 		y = 11 * 33 + 1, 
@@ -29,7 +31,8 @@ function Ghost() {
 		scatterMode,
 		scatterTimer = null,
 		firstScatterMove = false,
-		edible = false;
+		edible = false,
+		name = undefined;
 
 	function getX() {
 		return x;
@@ -77,6 +80,14 @@ function Ghost() {
 
 	function isFirstScatterMove() {
 		return firstScatterMove;
+	}
+
+	function getName() {
+		return name;
+	}
+
+	function setName(newName) {
+		name = newName;
 	}
 
 	function setTunnelSpeed(on) {
