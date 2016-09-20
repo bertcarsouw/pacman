@@ -16,7 +16,8 @@ function Game() {
 		pinky = new Ghost(),
 		clyde = new Ghost(),
 		inky = new Ghost(),
-		pathfinder = new Pathfinder(physics);
+		pathfinder = new Pathfinder(physics),
+		ghosts = [];
 
 	document.addEventListener('canvasLoaded', loadGameObjects, false);
 
@@ -53,7 +54,6 @@ function Game() {
 		pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
 		pinky.setScatterTimer();
 		pinky.setFirstScatterMove(false);
-		
 
 		clyde.setX(12 * 33 + 1);
 		clyde.setY(17 * 33 + 1);
@@ -61,13 +61,29 @@ function Game() {
 		clyde.setScatterTimer();
 		clyde.setFirstScatterMove(false);
 		
-
 		inky.setX(6 * 33 + 1);
 		inky.setY(24 * 33 + 1);
 		inkyHandler = setInterval(handleInky, inky.getSpeed());
 		inky.setScatterTimer();
 		inky.setFirstScatterMove(false);
 
+		ghosts.push(blinky);
+		ghosts.push(inky);
+		ghosts.push(pinky);
+		ghosts.push(clyde);
+
+	}
+
+	function setEdibleScatterMode() {
+		ghosts.forEach(function(ghost) {
+			ghost.setEdible(true);
+			if (ghost.inScatterMode()) {
+				ghost.resetScatter();
+			} else {
+				ghost.setFirstScatterMove(true);
+			}
+			ghost.setScatterTimer();
+		});
 	}
 
 	function setupPoints() {
@@ -145,6 +161,7 @@ function Game() {
 			level.removeDot(invadingBlockNumber);
 			if (level.isSpecialBlock(invadingBlockNumber)) {
 				// SPECIAL DOT EATEN -> set ghosts scatter mode + edible
+				setEdibleScatterMode();
 				printer.eraseSpecialDot(invadingBlockNumber);
 			} else {
 				printer.eraseDot(invadingBlockNumber);
@@ -198,6 +215,7 @@ function Game() {
 		} else if (clydeScatterMode) {
 			// at this point clyde just got out of scattermode
 			clydeScatterMode = false;
+			clyde.setEdible(false);
 			clyde.setDirection(physics.getOppositeDirection(clyde.getDirection()));
 			clyde.move();
 			printPacmanAndGhosts();
@@ -290,6 +308,7 @@ function Game() {
 
 		} else if (blinkyScatterMode) {
 			// at this point Blinky just got out of scattermode
+			blinky.setEdible(false);
 			blinkyScatterMode = false;
 			blinky.setDirection(physics.getOppositeDirection(blinky.getDirection()));
 			blinky.move();
@@ -377,6 +396,7 @@ function Game() {
 
 		} else if (pinkyScatterMode) {
 			// at this point pinky just got out of scattermode
+			pinky.setEdible(false);
 			pinkyScatterMode = false;
 			pinky.setDirection(physics.getOppositeDirection(pinky.getDirection()));
 			pinky.move();
@@ -464,6 +484,7 @@ function Game() {
 
 		} else if (inkyScatterMode) {
 			// at this point inky just got out of scattermode
+			inky.setEdible(false);
 			inkyScatterMode = false;
 			inky.setDirection(physics.getOppositeDirection(inky.getDirection()));
 			inky.move();

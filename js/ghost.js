@@ -19,6 +19,7 @@ function Ghost() {
 	this.setEdible = setEdible;
 	this.getName = getName;
 	this.setName = setName;
+	this.resetScatter = resetScatter;
 
 	var x = 13 * 33 + 19,
 		y = 11 * 33 + 1, 
@@ -128,6 +129,10 @@ function Ghost() {
 		scatterMode = false;
 		clearInterval(scatterTimer);
 		firstScatterMove = true;
+	}
+
+	function resetScatter() {
+		clearInterval(scatterTimer);
 	}
 
 	function isEdible() {
