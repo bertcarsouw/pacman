@@ -539,11 +539,11 @@ function Game() {
 	function redrawPoints(blockNumber) {
 		var pointsToRedraw = level.getSurroundingPoints(blockNumber);
 		pointsToRedraw.forEach(function(point) {
-			if (level.isSpecialBlock(point)) {
-				printer.printSpecialDot(point);
-			} else {
-				printer.printDot(point);
-			}
+			printer.printDot(point);
+		});
+		var specialBlocks = level.getNonEatenSpecialBlocks();
+		specialBlocks.forEach(function(specialBlock) {
+			printer.printSpecialDot(specialBlock);
 		});
 	}
 

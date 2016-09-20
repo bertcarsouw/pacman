@@ -7,6 +7,7 @@ function Level() {
 	this.getSurroundingPoints = getSurroundingPoints;
 	this.dotsLeft = dotsLeft;
 	this.isSpecialBlock = isSpecialBlock;
+	this.getNonEatenSpecialBlocks = getNonEatenSpecialBlocks;
 
 	var specialBlocks = [86, 111, 646, 671];
 
@@ -41,6 +42,16 @@ function Level() {
 		786, 797, 800, 811, 
 		814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839
 	];
+
+	function getNonEatenSpecialBlocks() {
+		var result = [];
+		specialBlocks.forEach(function(specialBlock) {
+			if (pointBlocks.indexOf(specialBlock) !== -1) {
+				result.push(specialBlock);
+			}
+		});
+		return result;
+	}
 
 	function isSpecialBlock(blockNumber) {
 		return specialBlocks.indexOf(blockNumber) !== -1;
