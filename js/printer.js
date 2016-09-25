@@ -15,6 +15,7 @@ function Printer(canvas) {
 	this.printPinky = printPinky;
 	this.printClyde = printClyde;
 	this.printInky = printInky;
+	this.printGhostHouse = printGhostHouse;
 
 	var context = canvas.getContext(),
 		levelImage = canvas.getLevelImage(),
@@ -152,6 +153,10 @@ function Printer(canvas) {
 		var vertical = Math.ceil(blockNumber / 28) - 1;
 		var horizontal = blockNumber % 28 - 1;
 		context.clearRect(horizontal * 33 - 1, vertical * 33 - 1, 35, 35);
+	}
+
+	function printGhostHouse() {
+		context.drawImage(levelImage, 425, 415, 75, 15, 425, 415, 75, 15);
 	}
 
 	function printBlinky(x, y, direction, open, scatterMode) {

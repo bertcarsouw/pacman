@@ -30,9 +30,9 @@ function Game() {
 			start();
 		} else {
 			printer.printLevel();
-			// printer.printGrid();
+			printer.printGrid();
 			setupPoints();
-			// printer.printGridNumbers();
+			printer.printGridNumbers();
 		}
 	}
 
@@ -49,8 +49,9 @@ function Game() {
 		blinky.setScatterTimer();
 		blinky.setFirstScatterMove(false);
 		
-		pinky.setX(6 * 33 + 1);
-		pinky.setY(10 * 33 + 1);
+		pinky.setX(13 * 33 + 19);
+		pinky.setY(14 * 33 + 1);
+		pinky.setDirection(UP);
 		pinkyHandler = setInterval(handlePinky, pinky.getSpeed());
 		pinky.setScatterTimer();
 		pinky.setFirstScatterMove(false);
@@ -216,34 +217,12 @@ function Game() {
 			// at this point clyde just got out of scattermode
 			clydeScatterMode = false;
 			clyde.setEdible(false);
-			clyde.setDirection(physics.getOppositeDirection(clyde.getDirection()));
-			clyde.move();
-			printPacmanAndGhosts();
-			return;
 		}
 
 		if (physics.inTunnel(blockNumber)) {
-			if (clyde.getSpeed() !== GHOST_TUNNEL_SPEED) {
-				clyde.setTunnelSpeed(true);
-				clearInterval(clydeHandler);
-				clydeHandler = setInterval(handleClyde, GHOST_TUNNEL_SPEED);
-			}
-			if (blockNumber == 393) {
-				if (clyde.getDirection() == LEFT) {
-					clyde.move();
-					printPacmanAndGhosts();
-					return;
-				}
-			} else if (blockNumber == 420) {
-				if (clyde.getDirection() == RIGHT) {
-					clyde.move();
-					printPacmanAndGhosts();
-					return;
-				}
-			} else if (physics.isNewBlock(clyde.getX(), clyde.getY()) && blockNumber == 392 && clyde.getDirection() == LEFT) {
-				clyde.setX(28 * 33 + 4);
-			} else if (physics.isNewBlock(clyde.getX(), clyde.getY()) && blockNumber == 421 && clyde.getDirection() == RIGHT) {
-				clyde.setX(-1 * 33 + 4);
+			if (handleGhostInTunnel(clyde, blockNumber)) {
+				// clyde handled
+				return;
 			}
 		} else {
 			if (clyde.getSpeed() == GHOST_TUNNEL_SPEED) {
@@ -310,34 +289,12 @@ function Game() {
 			// at this point Blinky just got out of scattermode
 			blinky.setEdible(false);
 			blinkyScatterMode = false;
-			blinky.setDirection(physics.getOppositeDirection(blinky.getDirection()));
-			blinky.move();
-			printPacmanAndGhosts();
-			return;
 		}
 
 		if (physics.inTunnel(blockNumber)) {
-			if (blinky.getSpeed() !== GHOST_TUNNEL_SPEED) {
-				blinky.setTunnelSpeed(true);
-				clearInterval(blinkyHandler);
-				blinkyHandler = setInterval(handleBlinky, GHOST_TUNNEL_SPEED);
-			}
-			if (blockNumber == 393) {
-				if (blinky.getDirection() == LEFT) {
-					blinky.move();
-					printPacmanAndGhosts();
-					return;
-				}
-			} else if (blockNumber == 420) {
-				if (blinky.getDirection() == RIGHT) {
-					blinky.move();
-					printPacmanAndGhosts();
-					return;
-				}
-			} else if (physics.isNewBlock(blinky.getX(), blinky.getY()) && blockNumber == 392 && blinky.getDirection() == LEFT) {
-				blinky.setX(28 * 33 + 4);
-			} else if (physics.isNewBlock(blinky.getX(), blinky.getY()) && blockNumber == 421 && blinky.getDirection() == RIGHT) {
-				blinky.setX(-1 * 33 + 4);
+			if (handleGhostInTunnel(blinky, blockNumber)) {
+				// blinky handled
+				return;
 			}
 		} else {
 			if (blinky.getSpeed() == GHOST_TUNNEL_SPEED) {
@@ -371,6 +328,19 @@ function Game() {
 		printer.eraseGhost(pinky.getX(), pinky.getY());
 		var blockNumber = physics.getBlockNumber(pinky.getX(), pinky.getY());
 
+		if (physics.inGhostHouse(blockNumber)) {
+			pinky.setDirection(UP);
+ 		}
+
+ 		if (pinky.getX() == (13 * 33 + 19) && pinky.getY() == (11 * 33 + 1) && pinky.getDirection() == UP) {
+			var newDirection = pathfinder.findDirectionToBlock(blockNumber, 30, pinky.getDirection());		
+			pinky.setDirection(newDirection);
+			pinky.move();
+			printer.printGhostHouse();
+			printPacmanAndGhosts();
+			return;
+ 		} 
+
 		if (pinky.inScatterMode()) {
 			pinkyScatterMode = true;
 			if (physics.isNewBlock(pinky.getX(), pinky.getY())) {
@@ -398,34 +368,12 @@ function Game() {
 			// at this point pinky just got out of scattermode
 			pinky.setEdible(false);
 			pinkyScatterMode = false;
-			pinky.setDirection(physics.getOppositeDirection(pinky.getDirection()));
-			pinky.move();
-			printPacmanAndGhosts();
-			return;
 		}
 
 		if (physics.inTunnel(blockNumber)) {
-			if (pinky.getSpeed() !== GHOST_TUNNEL_SPEED) {
-				pinky.setTunnelSpeed(true);
-				clearInterval(pinkyHandler);
-				pinkyHandler = setInterval(handlePinky, GHOST_TUNNEL_SPEED);
-			}
-			if (blockNumber == 393) {
-				if (pinky.getDirection() == LEFT) {
-					pinky.move();
-					printPacmanAndGhosts();
-					return;
-				}
-			} else if (blockNumber == 420) {
-				if (pinky.getDirection() == RIGHT) {
-					pinky.move();
-					printPacmanAndGhosts();
-					return;
-				}
-			} else if (physics.isNewBlock(pinky.getX(), pinky.getY()) && blockNumber == 392 && pinky.getDirection() == LEFT) {
-				pinky.setX(28 * 33 + 4);
-			} else if (physics.isNewBlock(pinky.getX(), pinky.getY()) && blockNumber == 421 && pinky.getDirection() == RIGHT) {
-				pinky.setX(-1 * 33 + 4);
+			if (handleGhostInTunnel(pinky, blockNumber)) {
+				// pinky handled
+				return;
 			}
 		} else {
 			if (pinky.getSpeed() == GHOST_TUNNEL_SPEED) {
@@ -486,34 +434,12 @@ function Game() {
 			// at this point inky just got out of scattermode
 			inky.setEdible(false);
 			inkyScatterMode = false;
-			inky.setDirection(physics.getOppositeDirection(inky.getDirection()));
-			inky.move();
-			printPacmanAndGhosts();
-			return;
 		}
 
 		if (physics.inTunnel(blockNumber)) {
-			if (inky.getSpeed() !== GHOST_TUNNEL_SPEED) {
-				inky.setTunnelSpeed(true);
-				clearInterval(inkyHandler);
-				inkyHandler = setInterval(handleInky, GHOST_TUNNEL_SPEED);
-			}
-			if (blockNumber == 393) {
-				if (inky.getDirection() == LEFT) {
-					inky.move();
-					printPacmanAndGhosts();
-					return;
-				}
-			} else if (blockNumber == 420) {
-				if (inky.getDirection() == RIGHT) {
-					inky.move();
-					printPacmanAndGhosts();
-					return;
-				}
-			} else if (physics.isNewBlock(inky.getX(), inky.getY()) && blockNumber == 392 && inky.getDirection() == LEFT) {
-				inky.setX(28 * 33 + 4);
-			} else if (physics.isNewBlock(inky.getX(), inky.getY()) && blockNumber == 421 && inky.getDirection() == RIGHT) {
-				inky.setX(-1 * 33 + 4);
+			if (handleGhostInTunnel(inky, blockNumber)) {
+				// inky handled
+				return;
 			}
 		} else {
 			if (inky.getSpeed() == GHOST_TUNNEL_SPEED) {
@@ -542,6 +468,43 @@ function Game() {
 		printPacmanAndGhosts();
 	}
 
+	function handleGhostInTunnel(ghost, blockNumber) {
+		if (ghost.getSpeed() !== GHOST_TUNNEL_SPEED) {
+			ghost.setTunnelSpeed(true);
+			if (ghost.getName() == 'inky') {
+				clearInterval(inkyHandler);
+				inkyHandler = setInterval(handleInky, GHOST_TUNNEL_SPEED);
+			} else if (ghost.getName() == 'pinky') {
+				clearInterval(pinkyHandler);
+				pinkyHandler = setInterval(handlePinky, GHOST_TUNNEL_SPEED);
+			} else if (ghost.getName() == 'blinky') {
+				clearInterval(blinkyHandler);
+				blinkyHandler = setInterval(handleBlinky, GHOST_TUNNEL_SPEED);
+			} else {
+				clearInterval(clydeHandler);
+				clydeHandler = setInterval(handleClyde, GHOST_TUNNEL_SPEED);
+			}
+		}
+		if (blockNumber == 393) {
+			if (ghost.getDirection() == LEFT) {
+				ghost.move();
+				printPacmanAndGhosts();
+				return true;
+			}
+		} else if (blockNumber == 420) {
+			if (ghost.getDirection() == RIGHT) {
+				ghost.move();
+				printPacmanAndGhosts();
+				return true;
+			}
+		} else if (physics.isNewBlock(ghost.getX(), ghost.getY()) && blockNumber == 392 && ghost.getDirection() == LEFT) {
+			ghost.setX(28 * 33 + 4);
+		} else if (physics.isNewBlock(ghost.getX(), ghost.getY()) && blockNumber == 421 && ghost.getDirection() == RIGHT) {
+			ghost.setX(-1 * 33 + 4);
+		}
+		return false;
+	}
+
 	function setCruiseElroy() {
 		blinky.setSpeed(blinky.getSpeed() - 2);
 		clearInterval(blinkyHandler);
@@ -568,14 +531,24 @@ function Game() {
 		});
 	}
 
+	// not used yet!
+	function setNewSpeed(ghost, speed) {
+		if (ghost.getName() == 'inky') {
+			clearInterval(inkyHandler);
+			inkyHandler = setInterval(handleInky, speed);
+		} else if (ghost.getName() == 'pinky') {
+			clearInterval(pinkyHandler);
+			pinkyHandler = setInterval(handlePinky, speed);
+		} else if (ghost.getName() == 'blinky') {
+			clearInterval(blinkyHandler);
+			blinkyHandler = setInterval(handleBlinky, speed);
+		} else {
+			clearInterval(clydeHandler);
+			clydeHandler = setInterval(handleClyde, speed);
+		}
+	}
+
 	function isGhostCollision() {
-
-		var ghosts = [];
-		ghosts.push(blinky);
-		ghosts.push(inky);
-		ghosts.push(pinky);
-		ghosts.push(clyde);
-
 		var ghostsEaten = [];
 		var limit = 20;
 		ghosts.forEach(function(ghost) {
@@ -583,9 +556,7 @@ function Game() {
 				ghostsEaten.push(ghost.getName());
 			}
 		});
-
 		return ghostsEaten;
-
 	}
 
 }

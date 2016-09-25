@@ -9,6 +9,7 @@ function Physics() {
 	this.getInvadingBlockNumber = getInvadingBlockNumber;
 	this.onCrossroads = onCrossroads;
 	this.isAtLeastEightTilesAway = isAtLeastEightTilesAway;
+	this.inGhostHouse = inGhostHouse;
 
 	var walkableBlocks = [
 		30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
@@ -104,6 +105,12 @@ function Physics() {
 		} else if (direction == LEFT) {
 			return currentBlockNumber - 1;
 		}
+	}
+
+	function inGhostHouse(blockNumber) {
+		return [376, 377, 378, 379, 380, 381,
+		404, 405, 406, 407, 408, 409,
+		432, 433, 434, 435, 436, 437].indexOf(blockNumber) !== -1;
 	}
 
 	function isWalkableBlock(blockNumber) {

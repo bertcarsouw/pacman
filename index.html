@@ -3,10 +3,11 @@
 	<head>
 		<meta charset="utf-8">
 		<title>pacman</title>
-		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<style type="text/css">body{text-align:center;background-color:#000;overflow:hidden}</style>
 	</head>
 	<body onload="new Game()">
 		<canvas></canvas>
+		<!-- build:js js/lib.js -->
 		<script src="js/canvas.js"></script>
 		<script src="js/constants.js"></script>
 		<script src="js/physics.js"></script>
@@ -17,5 +18,6 @@
 		<script src="js/pathfinder.js"></script>
 		<script src="js/ghost.js"></script>
 		<script src="js/controls.js"></script>
+		<!-- endbuild -->
 	</body>
 </html>

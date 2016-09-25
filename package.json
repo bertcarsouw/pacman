@@ -1,0 +1,24 @@
+{
+  "name": "pacman",
+  "version": "1.0.0",
+  "description": "HTML5 pacman",
+  "main": "gulpfile.js",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-copy": "0.0.2",
+    "gulp-uglify": "^2.0.0",
+    "gulp-usemin": "^0.3.24"
+  },
+  "scripts": {
+    "postinstall": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bertcarsouw/pacman.git"
+  },
+  "author": "Bert Carsouw",
+  "license": "ISC",
+  "homepage": "https://bertcarsouw.github.io/pacman/"
+}
